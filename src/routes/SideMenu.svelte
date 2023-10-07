@@ -16,7 +16,7 @@
 
 <div class="side-menu">
   <div class="top links">
-    {#each menuItems as item (item.link)}
+    {#each menuItems as item (item.text)}
       <a class="menu-item {item.link}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
     {/each}
   </div>
