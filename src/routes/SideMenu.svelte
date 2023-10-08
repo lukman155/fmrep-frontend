@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
 
   let menuItems = [
     { text: 'FMRepEx', link: '' },
@@ -14,7 +13,7 @@
   ];
 </script>
 
-<div class="side-menu">
+<nav class="side-menu">
   <div class="top links">
     {#each menuItems as item (item.text)}
       <a class="menu-item {item.link}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
@@ -25,7 +24,7 @@
     <a class="menu-item settings" href='/settings'><i class="fa fa-cog"></i> Settings</a>
     <a class="menu-item profile" href='/profile'><i class="fa fa-user"></i> Profile Name</a>
   </div>
-</div>
+</nav>
 
 <style>
   /* Add your CSS styling for the side menu here */
@@ -33,45 +32,38 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 200px;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    padding: 30px;
+    height: 100%;
+    width: max-content;
   }
 
   .top > :nth-child(1), .top > :nth-child(1):hover  {
+    text-align: left;
     font-size: 24px;
     font-weight: 700;
     color: black;
     background-color: white;
   }
 
-  
-
   .links {
     display:flex ;
     flex-direction: column;
-
     gap: 10px;
-
+    margin: 2em 1em;
   }
 
   .fa {
     text-align: center;
-    width: 30px;
-  font-size: 16px;
-  color: rgba(0, 0, 0, 0.345);
-  margin: 0 5px;
+    width: 14px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.345);
+    margin: 0 5px;
 }
 
   a {
     color: black;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 14px;
     padding: 10px;
   }
 

@@ -1,3 +1,9 @@
+<script>
+  import Tabs from "./Tabs.svelte";
+
+</script>
+
+
 <section>
   <div class="title">
     <h1>Above Apartments</h1>
@@ -5,21 +11,26 @@
   </div>
 
   <div class="row">
-    <div class="column">
+    <div class="column v-line">
       <h2>Property Overview</h2>
       <p>Detailed Information about property.</p>
-    </div>
-
-    <div class="image-con">
-      <img src="" alt="">
-    </div>
-
-    <div class="status-container">
       
+      <hr>
+
+      <div class="img-con">
+        <img src="pics/house.jpg" alt="">
+      </div>
+      <div class="status-container">
+        <Tabs />
+      </div>
     </div>
 
+   
 
-    <div class="v-line"></div>
+    
+
+
+
     <div class="column">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit quas atque, qui itaque cumque, optio dolorem maiores ipsum excepturi doloribus sunt hic eligendi sed est enim ullam ad? Placeat, sed.</div>
   </div>
 
@@ -29,26 +40,61 @@
 
 <style>
 
+  hr {
+    margin: 1em 0 1.5em 0;
+    border-color: #00000010  }
+
+  .img-con {
+    width: 100%;
+    
+    max-height: auto;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5%;
+  }
+
+  h1, h2, p {
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+
+  p {
+    font-size: .8em;
+    margin: .5em 0 0 0;
+
+  }
+
   .title {
+    font-size: 1.5em;
     text-align: center;
-    padding: 1px 0;
+    padding: 1em;
     border-bottom: 1px solid rgba(0,0,0,.1);
     margin: 0 2em 2em 2em;
   }
   .row {
     display: flex;
-    flex: 1 1 50%;
-    gap: 10px;
+
+  }
+
+
+
+  .column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 2em;
+    height: 1000px;
   }
 
   .v-line {
-    width: 0;
-    border: .5px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .column {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1) ;
   }
 </style>

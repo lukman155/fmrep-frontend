@@ -3,13 +3,31 @@
 
 </script>
 
-<SideMenu />
-<div class="wrapper">
-  <slot />
+<div class="container">
+
+  <div class="sidebar">
+    <SideMenu />
+  </div>
+
+  <div class="content">
+    <slot />
+  </div>
+
 </div>
 
 <style>
-  .wrapper {
-    margin-left: 261px;
-  }
+
+.container {
+  display: flex;
+  height: 100%;
+
+}
+.sidebar {
+  height: 100%;
+}
+
+.content {
+  flex-grow: 1;
+  overflow: auto;
+}
 </style>
