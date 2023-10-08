@@ -1,7 +1,6 @@
 <script>
 
   let menuItems = [
-    { text: 'FMRepEx', link: '' },
     { text: 'Home', link: '', icon: 'fa-home' },
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
@@ -15,6 +14,9 @@
 
 <nav class="side-menu">
   <div class="top links">
+    
+    <a class="menu-item logo" href='/'>FMRepEx</a>
+
     {#each menuItems as item (item.text)}
       <a class="menu-item {item.link}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
     {/each}
