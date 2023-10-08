@@ -31,8 +31,10 @@
 
 
 
-    <div class="column">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit quas atque, qui itaque cumque, optio dolorem maiores ipsum excepturi doloribus sunt hic eligendi sed est enim ullam ad? Placeat, sed.</div>
-  </div>
+    <div class="column">
+      <h2>Property Activity</h2>
+      
+    </div>
 
 
 </section>
