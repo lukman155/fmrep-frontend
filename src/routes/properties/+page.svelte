@@ -29,7 +29,7 @@
             <p class="ticket-text">Above Apartments<br>
               <span class="submit-badge">No. 5, Sandscript Avenue</span></p>
           </td>
-          <td>Mr Dennis</td>
+          <td>Dennis</td>
           <td>2 Bedroom Ensuite</td>
           <td>1 Year</td>
       </tr>
