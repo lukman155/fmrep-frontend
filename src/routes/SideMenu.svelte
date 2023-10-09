@@ -1,5 +1,12 @@
 <script>
 
+  import { page } from '$app/stores'
+  import { onMount } from 'svelte';
+
+  $: currentRoute = $page.route.id;
+
+
+
   let menuItems = [
     { text: 'Home', link: '', icon: 'fa-home' },
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
@@ -18,7 +25,7 @@
     <a class="menu-item logo" href='/'>FMRepEx</a>
 
     {#each menuItems as item (item.text)}
-      <a class="menu-item {item.link}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
+      <a class="menu-item {item.link} {currentRoute == '/'+item.link? 'active': ''}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
     {/each}
   </div>
   <div class="bottom links">
@@ -29,6 +36,12 @@
 </nav>
 
 <style>
+
+  .active, .active > .fa {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+  }
   /* Add your CSS styling for the side menu here */
   .side-menu {
     display: flex;
