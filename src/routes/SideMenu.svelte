@@ -29,9 +29,9 @@
     {/each}
   </div>
   <div class="bottom links">
-    <a class="menu-item support" href='/support'><i class="fa fa-question-circle"></i> Support</a>
-    <a class="menu-item settings" href='/settings'><i class="fa fa-cog"></i> Settings</a>
-    <a class="menu-item profile" href='/profile'><i class="fa fa-user"></i> Profile Name</a>
+    <a class="menu-item support {currentRoute == '/support'? 'active': ''}" href='/support'><i class="fa fa-question-circle"></i> Support</a>
+    <a class="menu-item settings {currentRoute == '/settings'? 'active': ''}" href='/settings'><i class="fa fa-cog"></i> Settings</a>
+    <a class="menu-item profile {currentRoute == '/profile'? 'active': ''}" href='/profile'><i class="fa fa-user"></i> Profile Name</a>
   </div>
 </nav>
 
@@ -40,7 +40,44 @@
   .active, .active > .fa {
     background-color: black;
     color: white;
-    border-radius: 5px;
+    border-radius: 10px;
+  }
+
+
+  .active.support, .active.support > .fa {
+    background-color: rgba(0, 80, 36, 0.788);
+  }
+
+  a.support:hover {
+    background-color: rgba(0, 80, 36, 0.788);
+  }
+  
+
+  .active.settings {
+    background-color: rgba(0, 21, 80, 0.788);
+  }
+
+  a.settings:hover {
+    background-color: rgba(0, 21, 80, 0.788);
+  }
+  
+
+  .active.profile, .active.profile > .fa {
+    background-color: rgb(255, 0, 0);
+  }
+
+  a.profile:hover {
+    background-color: rgb(255, 0, 0);
+  }
+  
+
+  .active, .active > .fa {
+    background-color: black;
+    color: white;
+    border-radius: 10px;
+  }
+  .active:hover {
+    background-color: black;
   }
   /* Add your CSS styling for the side menu here */
   .side-menu {
@@ -80,16 +117,18 @@
     text-decoration: none;
     font-size: 14px;
     padding: 10px;
+    border-radius: 10px;
+
   }
 
   a:hover {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
-    border-radius: 5px;
+
   }
 
-  a:hover .fa {
+  a:hover .fa  {
+    background-color: transparent;
     color: white;
-    border-radius: 5px;
   }
 </style>
