@@ -12,6 +12,10 @@
     }
   }
 
+  const handleRegister = () => {
+    register = !register;
+  }
+
 </script>
 
 <section class="authContainer">
@@ -29,10 +33,12 @@
 
       <input bind:value={password} type="password" placeholder="Password" />
     </label>
-    <label>
-      <p class={confirmPass?'above':'center'}>Confirm Password</p>
-      <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
-    </label>
+    {#if register}
+      <label>
+        <p class={confirmPass?'above':'center'}>Confirm Password</p>
+        <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
+      </label>
+    {/if}
     <button type="button">Submit</button>
   </form>
 
@@ -41,12 +47,12 @@
     {#if register}
       <div>
         <p>Already have an account?</p>
-        <p>Login</p>
+        <p on:click={handleRegister}>Login</p>
       </div>
     {:else}
     <div>
       <p>Don't have have an account?</p>
-      <p>Register</p>
+      <p on:click={handleRegister}>Register</p>
     </div>
     {/if}
   </div>
@@ -54,6 +60,26 @@
 </section>
 
 <style>
+  
+
+  .options > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5em;
+  }
+
+  .options div p:last-of-type {
+    color: rgb(0, 0, 0);
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: all .5s ease-in-out;
+  }
+
+  .options div p:last-of-type:hover {
+    text-underline-offset: 5px;
+  }
 
   form, .options {
     width: 400px;
@@ -65,8 +91,15 @@
     padding: 1em 0;
     overflow: hidden;
     font-size: .9em;
+    display: flex;
+    flex-direction: column;
+    gap: .6em;
+
   }
 
+  p{
+    margin: 0;
+  }
   .options > p {
     position: relative;
     text-align: center;
