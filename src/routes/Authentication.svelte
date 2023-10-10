@@ -152,7 +152,7 @@
 
   .center{
     top: 50%;
-    left: 6px;
+    left: 1em;
     border: 1px solid transparent;
     opacity: 0;
   }
