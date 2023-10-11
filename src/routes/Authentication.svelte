@@ -1,15 +1,36 @@
 <script>
+  import { authHandlers } from "../store/store";
+
   let email = '';
   let password = '';
   let confirmPass = '';
   let error = false;
-  let register = false
+  let register = false;
+  let authenticating = false;
 
-  function handleAuthenticate(){
+  async function handleAuthenticate(){
+    if (authenticating){
+      return;
+    }
+
     if(!email || !password || (register && !confirmPass)) {
       error = true;
       return;
     }
+
+    authenticating = true;
+
+    try {
+      if (!register) {
+        await authHandlers.login(email, password);
+      } else {
+        await authHandlers.signup(email, password);
+      }
+    } catch (err) {
+      console.log('There was an auth error', err);
+      error = true;
+    }
+
   }
 
   const handleRegister = () => {
@@ -21,10 +42,11 @@
 <section class="authContainer">
   <form action="">
     <h1>{register? 'Register' : 'Login'}</h1>
-    {#if error}
+    
+    <label>
+      {#if error}
     <p class="error">The information you have entered is incorrect</p>
     {/if}
-    <label>
       <p class={email?'above':'center'}>Email</p>
       <input bind:value={email} type="email" placeholder="Email" />
     </label>
@@ -39,7 +61,13 @@
         <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
       </label>
     {/if}
-    <button type="button">Submit</button>
+    <button on:click={handleAuthenticate} type="button" class="submit-btn">
+      {#if authenticating}
+        <i class="fa-solid fa-spinner spin"></i>
+      {:else}
+        Submit
+      {/if}
+    </button>
   </form>
 
   <div class="options">
@@ -60,7 +88,24 @@
 </section>
 
 <style>
-  
+  .submit-btn {
+    display: grid;
+    place-items: center;
+
+  }
+
+  .spin {
+    animation: spin 1s linear infinite
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
   .options > div {
     display: flex;
@@ -128,6 +173,12 @@
   .error {
     color: coral;
     font-size: 0.9em;
+    text-align: center;
+    position: absolute;
+    top: -2em;
+    right: 50%;
+    width: 100%;
+    transform: translateX(50%);
   }
 
   .above, .center {

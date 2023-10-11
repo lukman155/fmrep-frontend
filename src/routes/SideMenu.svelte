@@ -1,7 +1,6 @@
 <script>
 
   import { page } from '$app/stores'
-  import { onMount } from 'svelte';
 
   $: currentRoute = $page.route.id;
 
