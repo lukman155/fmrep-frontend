@@ -8,6 +8,7 @@
   const noneAuthRoutes = ['/'];
 
 
+
   onMount(() => {
     console.log('mounting');
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
