@@ -1,25 +1,17 @@
 <script>
 	import { authStore } from './../store/store.js';
   import { onMount } from "svelte";
+  import { goto } from '$app/navigation'
 	import { auth, db } from './../lib/firebase/firebase.js';
-  import SideMenu from "./SideMenu.svelte";
   import { doc, getDoc, setDoc } from "firebase/firestore";
-
-  const noneAuthRoutes = ['/'];
-
 
 
   onMount(() => {
-    console.log('mounting');
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       const currentPath = window.location.pathname;
       
-      if (!user && !noneAuthRoutes.includes(currentPath)){
-        window.location.href = '/';
-        return
-      }
-      if (user && currentPath === '/'){
-        window.location.href = '/dashboard';
+      if (user && currentPath === '/login'){
+        goto ('/dashboard');
         return
       }
 
@@ -54,31 +46,4 @@
 
 </script>
 
-<div class="container">
-
-  <div class="sidebar">
-    <SideMenu />
-  </div>
-
-  <div class="content">
-    <slot />
-  </div>
-
-</div>
-
-<style>
-
-.container {
-  display: flex;
-  height: 100%;
-
-}
-.sidebar {
-  height: 100%;
-}
-
-.content {
-  flex-grow: 1;
-  overflow: auto;
-}
-</style>
+<slot />

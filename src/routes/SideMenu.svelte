@@ -1,11 +1,33 @@
 <script>
 
   import { page } from '$app/stores'
-  import { authHandlers } from '../store/store';
+  import { goto } from '$app/navigation' 
+  import { authHandlers, authStore } from '../store/store';
+
 
   $: currentRoute = $page.route.id;
 
+  let name;
+  let email;
 
+  authStore.subscribe((curr) => {
+    
+    email = curr?.user?.email;
+    name = curr?.user?.displayName;
+  })
+
+  const handleLogOut = () => {
+    authHandlers.logout()
+  .then(() => {
+    authStore.user = null;
+    goto('/');
+  })
+  .catch((error) => {
+    // Handle any errors that occur during the logout process here.
+    console.error(error);
+  });
+      
+  }
 
   let menuItems = [
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
@@ -30,7 +52,7 @@
   <div class="bottom links">
     <a class="menu-item support {currentRoute == '/support'? 'active': ''}" href='/support'><i class="fa fa-question-circle"></i> Support</a>
     <a class="menu-item settings {currentRoute == '/settings'? 'active': ''}" href='/settings'><i class="fa fa-cog"></i> Settings</a>
-    <button class="menu-item profile " on:click={authHandlers.logout}><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>
+    <button class="menu-item profile " on:click={handleLogOut}><i class="fa-solid fa-arrow-right-from-bracket"></i>{email}</button>
   </div>
 </nav>
 

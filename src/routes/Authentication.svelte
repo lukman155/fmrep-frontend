@@ -5,6 +5,7 @@
   let password = '';
   let confirmPass = '';
   let error = false;
+  let errorMsg;
   let register = false;
   let authenticating = false;
 
@@ -14,6 +15,13 @@
     }
 
     if(!email || !password || (register && !confirmPass)) {
+      errorMsg = 'The information you have entered is incorrect'
+      error = true;
+      return;
+    }
+
+    if (register && password !== confirmPass){
+      errorMsg = 'Passwords do not match';
       error = true;
       return;
     }
@@ -29,6 +37,8 @@
     } catch (err) {
       console.log('There was an auth error', err);
       error = true;
+      errorMsg = err;
+      
     }
 
   }
@@ -45,7 +55,7 @@
     
     <label>
       {#if error}
-    <p class="error">The information you have entered is incorrect</p>
+    <p class="error">{errorMsg}</p>
     {/if}
       <p class={email?'above':'center'}>Email</p>
       <input bind:value={email} type="email" placeholder="Email" />
