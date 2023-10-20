@@ -1,46 +1,21 @@
 <script>
-	import { authStore } from './../store/store.js';
+	import { isLoggedIn } from '../store/authStore.js';
   import { onMount } from "svelte";
-  import { goto } from '$app/navigation'
 	import { auth, db } from './../lib/firebase/firebase.js';
   import { doc, getDoc, setDoc } from "firebase/firestore";
 
-
   onMount(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      const currentPath = window.location.pathname;
+      if (user) {
+      isLoggedIn.update(() => true);
+      console.log('logged in')
+      document.cookie = `isLoggedIn=true; max-age=3600`;
       
-      if (user && currentPath === '/login'){
-        goto ('/dashboard');
-        return
-      }
-
-      if(!user){
-        return; 
-      }
-
-      let dataToSetToStore;
-      const docRef = doc(db, 'users', user.uid);
-      const docSnap = await getDoc(docRef);
-      if (!docSnap.exists){
-        const userRef = doc(db, 'user', user.uid); 
-        dataToSetToStore = {
-            email: user.email,
-            tickets: [],
-          };
-        await setDoc(userRef, dataToSetToStore, {merge: true});
       } else {
-        const userData = docSnap.data();
-        dataToSetToStore = userData;
+        isLoggedIn.update(() => false)
+        console.log('logged out')
+        document.cookie = `isLoggedIn=false; max-age=3600`;
       }
-      authStore.update(curr => {
-        return{
-          ...curr,
-          user,
-          data: dataToSetToStore,
-          loading:false,
-        }
-      })
     });
   }); 
 

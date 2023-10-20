@@ -3,7 +3,6 @@
 
 </script>
 
-
 <section>
   <div class="title">
     <h1>Above Apartments</h1>
@@ -25,17 +24,9 @@
       </div>
     </div>
 
-   
-
-    
-
-
-
     <div class="column">
       <h2>Property Activity</h2>
-      
     </div>
-
 
 </section>
 

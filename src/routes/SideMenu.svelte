@@ -2,7 +2,9 @@
 
   import { page } from '$app/stores'
   import { goto } from '$app/navigation' 
-  import { authHandlers, authStore } from '../store/store';
+  import { signOut } from 'firebase/auth';
+  import { auth } from '../lib/firebase/firebase';
+  import { onMount } from 'svelte';
 
 
   $: currentRoute = $page.route.id;
@@ -10,23 +12,28 @@
   let name;
   let email;
 
-  authStore.subscribe((curr) => {
-    
-    email = curr?.user?.email;
-    name = curr?.user?.displayName;
-  })
+  onMount(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+      email = auth?.currentUser?.email
+      
+      } else {
+        
+      }
+    });
+  });
 
   const handleLogOut = () => {
-    authHandlers.logout()
-  .then(() => {
-    authStore.user = null;
-    goto('/');
-  })
-  .catch((error) => {
-    // Handle any errors that occur during the logout process here.
-    console.error(error);
-  });
-      
+    signOut(auth)
+    .then(() => {
+      localStorage.removeItem('uid');
+      document.cookie = `isLoggedIn=false; max-age=3600`;
+
+      goto('/login');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   let menuItems = [
@@ -34,9 +41,7 @@
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
     { text: 'Inbox', link: 'inbox', icon: 'fa-envelope' },
     { text: 'Notifications', link: 'notifications', icon: 'fa-bell' },
-    { text: 'Leases', link: 'leases', icon: 'fa-file-contract' },
     { text: 'Tickets', link: 'tickets', icon: 'fa-ticket' },
-    { text: 'Tenants', link: 'tenants', icon: 'fa-users' },
   ];
 </script>
 

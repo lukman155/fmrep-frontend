@@ -1,5 +1,6 @@
 <script>
-  import { authHandlers } from "../store/store";
+  import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+  import { goto } from '$app/navigation'
 
   let email = '';
   let password = '';
@@ -9,7 +10,10 @@
   let register = false;
   let authenticating = false;
 
+  const auth = getAuth();
+
   async function handleAuthenticate(){
+    error = false
     if (authenticating){
       return;
     }
@@ -30,27 +34,52 @@
 
     try {
       if (!register) {
-        await authHandlers.login(email, password);
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            localStorage.setItem('uid', user.uid);
+            document.cookie = `isLoggedIn=true; max-age=3600`;
+            goto('/dashboard')
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+          });
       } else {
-        await authHandlers.signup(email, password);
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+
+            const user = userCredential.user;
+            localStorage.setItem('uid', user.uid);
+            document.cookie = `isLoggedIn=true; max-age=3600`;
+            goto('/dashboard')
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+          });
       }
     } catch (err) {
       console.log('There was an auth error', err);
       error = true;
       errorMsg = err;
-      
+      authenticating = false;
     }
 
   }
+
 
   const handleRegister = () => {
     register = !register;
   }
 
+
 </script>
 
 <section class="authContainer">
-  <form action="">
+  <form>
     <h1>{register? 'Register' : 'Login'}</h1>
     
     <label>
@@ -71,8 +100,10 @@
         <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
       </label>
     {/if}
-    <button on:click={handleAuthenticate} type="button" class="submit-btn">
-      {#if authenticating}
+    <button on:submit={handleAuthenticate} on:click={handleAuthenticate} class="submit-btn">
+      {#if error}
+      Try Again
+      {:else if authenticating}
         <i class="fa-solid fa-spinner spin"></i>
       {:else}
         Submit
@@ -82,6 +113,7 @@
 
   <div class="options">
     <p>Or</p>
+
     {#if register}
       <div>
         <p>Already have an account?</p>
