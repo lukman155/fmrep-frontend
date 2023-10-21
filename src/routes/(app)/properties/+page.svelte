@@ -1,4 +1,24 @@
+<script>
 
+  import { collection, getDocs } from "firebase/firestore";
+  import { onMount } from "svelte";
+  import { db } from "../../../lib/firebase/firebase";
+
+  const properties = [];
+
+  onMount(() => {
+    fetchProperties()
+  })  
+
+  const fetchProperties = async() => {
+    const querySnapshot = await getDocs(collection(db, "properties"));
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      properties.push(doc.data())
+    });
+  }
+
+</script>
 
 
 <section>
@@ -21,6 +41,7 @@
           </tr>
       </thead>
       <tbody>
+        
         <tr>
           <td class="t-text">
             <div class="img-con">
@@ -36,6 +57,9 @@
 
       </tbody>
   </table>
+
+  <a href="/properties/add">Add Property</a>
+  <a href="/properties/edit">Edit Property</a>
 
 </section>
 

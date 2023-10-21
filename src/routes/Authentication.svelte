@@ -1,5 +1,5 @@
 <script>
-  import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+  import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
   import { goto } from '$app/navigation'
 
   let email = '';
