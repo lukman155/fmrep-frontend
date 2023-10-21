@@ -1,4 +1,5 @@
 <script>
+	import { goto } from '$app/navigation';
   import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
   import { db, storage } from "../../../../lib/firebase/firebase";
   import { ref } from "firebase/storage";
@@ -25,7 +26,9 @@
     }
     docRef()
     console.log("Document successfully written!", docRef.id);
+    history.back()
   };
+
 </script>
 
 <a href="/properties">Back</a>

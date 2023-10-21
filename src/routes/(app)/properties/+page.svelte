@@ -4,11 +4,9 @@
   import { onMount } from "svelte";
   import { db } from "../../../lib/firebase/firebase";
 
+
   const properties = [];
 
-  onMount(() => {
-    fetchProperties()
-  })  
 
   const fetchProperties = async() => {
     const querySnapshot = await getDocs(collection(db, "properties"));
@@ -16,6 +14,7 @@
       // doc.data() is never undefined for query doc snapshots
       properties.push(doc.data())
     });
+    return properties
   }
 
 </script>
@@ -41,21 +40,27 @@
           </tr>
       </thead>
       <tbody>
-        
-        <tr>
-          <td class="t-text">
-            <div class="img-con">
-              <img src="pics/house.jpg" alt="prop-image">
-            </div>
-            <p class="ticket-text">Above Apartments<br>
-              <span class="submit-badge">No. 5, Sandscript Avenue</span></p>
-          </td>
-          <td>Dennis</td>
-          <td>2 Bedroom Ensuite</td>
-          <td>1 Year</td>
-      </tr>
-
-      </tbody>
+        {#await fetchProperties()}
+        <p>Loading</p>
+        {:then properties}
+          {#each properties as property}
+            <tr>
+              <td class="t-text">
+                <div class="img-con">
+                  <img src="pics/house.jpg" alt="prop-image">
+                </div>
+                <p class="ticket-text">{property.name}<br>
+                  <span class="submit-badge">{property.address}</span></p>
+              </td>
+              <td>Dennis</td>
+              <td>2 Bedroom Ensuite</td>
+              <td>1 Year</td>
+            </tr>
+          {/each}
+          {:catch error}
+          <p>Something went wrong</p>
+          {/await}
+        </tbody>
   </table>
 
   <a href="/properties/add">Add Property</a>
