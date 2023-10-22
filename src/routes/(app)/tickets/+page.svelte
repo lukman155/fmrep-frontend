@@ -1,23 +1,31 @@
 <script>
 
-  import { collection, getDocs, onSnapshot } from "firebase/firestore";
+  import { collection, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
   import { db } from "../../../lib/firebase/firebase";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
   
   const tickets = [];
   let data = []
 
 
+let unsubscribe;
+
 
   onMount(()=> {
     const collectionRef = collection(db, "tickets");
-    const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
-    const doc = snapshot.docs;
-    doc.forEach((doc) => {
-      data = [...data, doc.data()]
+    const q = query(collectionRef, orderBy('createdAt', 'desc'), limit(10));
+    unsubscribe = onSnapshot(q, (snapshot) => {
+      const doc = snapshot.docs;
+      data = [];
+      doc.forEach((doc) => {
+        data = [...data, doc.data()]
+      });
     });
-  });
+  })
+
+  onDestroy(() => {
+    unsubscribe;
   })
 
   const fetchTickets = async() => {
@@ -29,7 +37,9 @@
   }
 
 
-
+  const showTicket = (x) => {
+    console.log(x)
+  };
 
 </script>
 
@@ -55,26 +65,18 @@
           </tr>
       </thead>
       <tbody>
-        <!-- {#await fetchTickets()}
-        <p>Loading</p>
-        {:then tickets} -->
-          {#each data as ticket}
-            <tr>
-              <td class="t-text">
-                <i class="fa-regular fa-file-lines"></i>
-                <p class="ticket-text">{ticket.ticket_name}<br>
-                  <span class="submit-badge">Submitted by {ticket.tenant}</span></p>
-              </td>
-              <td>{ticket.address}</td>
-              <td>{ticket.category}</td>
-              <td>{ticket.priority}</td>
-            </tr>
-          {/each}
-      <!-- {:catch error}
-      <p>Something went wrong</p>
-      {/await} -->
-  
-
+        {#each data as ticket}
+          <tr on:click={showTicket(ticket.ticket_name)}>
+            <td class="t-text">
+              <i class="fa-regular fa-file-lines"></i>
+              <p class="ticket-text">{ticket.ticket_name}<br>
+                <span class="submit-badge">Submitted by {ticket.tenant}</span></p>
+            </td>
+            <td>{ticket.address}</td>
+            <td>{ticket.category}</td>
+            <td>{ticket.priority}</td>
+          </tr>
+        {/each}
       </tbody>
   </table>
 
