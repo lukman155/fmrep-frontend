@@ -4,3 +4,5 @@ export const isLoggedIn = writable(false)
 
 export const userAuth = writable({});
 
+export let x = writable(0);
+  

@@ -1,3 +1,37 @@
+<script>
+
+  import { collection, getDocs, onSnapshot } from "firebase/firestore";
+  import { db } from "../../../lib/firebase/firebase";
+  import { onMount } from "svelte";
+
+  
+  const tickets = [];
+  let data = []
+
+
+
+  onMount(()=> {
+    const collectionRef = collection(db, "tickets");
+    const unsubscribe = onSnapshot(collectionRef, (snapshot) => {
+    const doc = snapshot.docs;
+    doc.forEach((doc) => {
+      data = [...data, doc.data()]
+    });
+  });
+  })
+
+  const fetchTickets = async() => {
+    const querySnapshot = await getDocs(collection(db, "tickets"));
+    querySnapshot.forEach((doc) => {
+      tickets.push(doc.data())
+    });
+    return tickets
+  }
+
+
+
+
+</script>
 
 
 
@@ -21,39 +55,32 @@
           </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="t-text">
-            <i class="fa-regular fa-file-lines"></i>
-            <p class="ticket-text">Ticket 2<br>
-              <span class="submit-badge">Submitted by Dennis</span></p>
-          </td>
-          <td>Property A</td>
-          <td>Category 2</td>
-          <td>Medium</td>
-      </tr>
-      <tr>
-        <td class="t-text">
-          <i class="fa-regular fa-file-lines"></i>
-          <p class="ticket-text">Ticket 2<br>
-            <span class="submit-badge">Submitted by Dennis</span></p>
-        </td>
-        <td>Property B</td>
-        <td>Category 2</td>
-        <td>Medium</td>
-    </tr>
-    <tr>
-      <td class="t-text">
-        <i class="fa-regular fa-file-lines"></i>
-        <p class="ticket-text">Ticket 2<br>
-          <span class="submit-badge">Submitted by Dennis</span></p>
-      </td>
-      <td>Property C</td>
-      <td>Category 2</td>
-      <td>Medium</td>
-  </tr>
+        <!-- {#await fetchTickets()}
+        <p>Loading</p>
+        {:then tickets} -->
+          {#each data as ticket}
+            <tr>
+              <td class="t-text">
+                <i class="fa-regular fa-file-lines"></i>
+                <p class="ticket-text">{ticket.ticket_name}<br>
+                  <span class="submit-badge">Submitted by {ticket.tenant}</span></p>
+              </td>
+              <td>{ticket.address}</td>
+              <td>{ticket.category}</td>
+              <td>{ticket.priority}</td>
+            </tr>
+          {/each}
+      <!-- {:catch error}
+      <p>Something went wrong</p>
+      {/await} -->
+  
 
       </tbody>
   </table>
+
+  <a href="/tickets/add">Add Property</a>
+  <a href="/tickets/edit">Edit Property</a>
+
 
 </section>
 
