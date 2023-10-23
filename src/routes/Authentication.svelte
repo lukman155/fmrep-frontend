@@ -1,6 +1,7 @@
 <script>
   import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
   import { goto } from '$app/navigation'
+  import { userAuth } from "../store/authStore";
 
   let email = '';
   let password = '';
@@ -36,8 +37,7 @@
       if (!register) {
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-            const user = userCredential.user;
-            localStorage.setItem('uid', user.uid);
+            $userAuth = userCredential.user;
             document.cookie = `isLoggedIn=true; max-age=3600`;
             goto('/dashboard')
           })
@@ -49,9 +49,7 @@
       } else {
         createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
-
-            const user = userCredential.user;
-            localStorage.setItem('uid', user.uid);
+            $userAuth = userCredential.user
             document.cookie = `isLoggedIn=true; max-age=3600`;
             goto('/dashboard')
           })

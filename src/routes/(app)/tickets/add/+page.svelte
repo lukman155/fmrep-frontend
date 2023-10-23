@@ -2,14 +2,16 @@
 	import { userAuth, x } from './../../../../store/authStore.js';
 	import { goto } from '$app/navigation';
   import { addDoc, collection, doc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
-  import { db, storage } from "../../../../lib/firebase/firebase";
+  import { auth, db, storage } from "../../../../lib/firebase/firebase";
   import { ref } from "firebase/storage";
   import { writable } from 'svelte/store';
+  import { onMount } from 'svelte';
 
 
   let y;
   x.subscribe ((value) => {
     y = value})
+
   let ticket_name = 'Ticket'+ ' ' + y ;
   let tenant = "Sami";
   let address = "no" + ' ' + y;
@@ -17,6 +19,17 @@
   let priority = "high";
   let loading = false;
   let error = false;
+  
+
+// const unsubscribe = userAuth.subscribe((user) => {
+//     if (user) {
+//       console.log(user)
+//     } else {
+//       console.log('no user new')
+//     }
+//   });
+
+  
 
   const newProp = async() => {
     const docData = {
@@ -27,6 +40,7 @@
       priority,
       createdAt: Timestamp.now(),
     };
+    
     
 
     
