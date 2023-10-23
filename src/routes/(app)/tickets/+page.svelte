@@ -102,7 +102,7 @@ let unsubscribe;
     {#await metrics.in_progress()}
     <span class="badge status-in">Loading</span>
     {:then num}
-    <span class="badge">In Progress: {num}</span>
+    <span class="badge status-in">In Progress: {num}</span>
     {/await}
 
     {#await metrics.completed()}
@@ -114,7 +114,7 @@ let unsubscribe;
     {#await metrics.canceled()}
     <span class="badge">Loading</span>
     {:then num}
-    <span class="badge status-Canceled">Canceled: {num}</span>
+    <span class="badge status-canceled">Canceled: {num}</span>
     {/await}
   
 
