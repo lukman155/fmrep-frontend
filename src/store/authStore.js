@@ -8,5 +8,3 @@ export const userAuth = writable(undefined);
 
 export let x = writable(0);
 
-
-  

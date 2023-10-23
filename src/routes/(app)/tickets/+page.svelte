@@ -1,19 +1,20 @@
 <script>
 
-  import { collection, getDocs, limit, onSnapshot, orderBy, query } from "firebase/firestore";
+  import { collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
   import { db } from "../../../lib/firebase/firebase";
   import { onDestroy, onMount } from "svelte";
 
+  const collectionRef = collection(db, "tickets");
   
   const tickets = [];
   let data = []
-
+  let activeTickets;
+  let completeTickets;
+  let num;
 
 let unsubscribe;
 
-
   onMount(()=> {
-    const collectionRef = collection(db, "tickets");
     const q = query(collectionRef, orderBy('createdAt', 'desc'), limit(10));
     unsubscribe = onSnapshot(q, (snapshot) => {
       const doc = snapshot.docs;
@@ -36,6 +37,15 @@ let unsubscribe;
     return tickets
   }
 
+  const metrics = async() => {
+    const q = query(collection(db, "tickets"));
+    let totalTickets = await getCountFromServer(q);
+    num = totalTickets.data().count
+    return num
+    // activeTickets = await getCountFromServer(collectionRef).data();
+    // completeTickets = await getCountFromServer(collectionRef).data();
+  }
+
 
   const showTicket = (x) => {
     console.log(x)
@@ -52,7 +62,15 @@ let unsubscribe;
   </div>
 
   <h2>Maintenance Tickets</h2>
-  <p class="badge">10 Active Tickets</p>
+
+
+  
+    {#await metrics()}
+    <p class="badge">Loading</p>
+    {:then num}
+    <p class="badge">Total Number of Tickets: {num}</p>
+    {/await}
+  
 
   
   <table>

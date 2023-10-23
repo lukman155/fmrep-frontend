@@ -12,6 +12,7 @@
   x.subscribe ((value) => {
     y = value})
 
+  let selectedStatus = 'Pending';
   let ticket_name = 'Ticket'+ ' ' + y ;
   let tenant = "Sami";
   let address = "no" + ' ' + y;
@@ -19,30 +20,35 @@
   let priority = "high";
   let loading = false;
   let error = false;
-  
+  let userData;
 
-// const unsubscribe = userAuth.subscribe((user) => {
-//     if (user) {
-//       console.log(user)
-//     } else {
-//       console.log('no user new')
-//     }
-//   });
+  const statusOptions = [
+    'Pending',
+    'In Progress',
+    'Completed',
+    'Canceled',
+  ];
 
-  
+const unsubscribe = userAuth.subscribe((user) => {
+    if (user) {
+      userData = user
+      console.log(userData)
+    } else {
+      console.log('no user new')
+    }
+  });
+
 
   const newProp = async() => {
     const docData = {
       ticket_name,
-      tenant,
+      tenant:userData.email,
       address,
       category,
       priority,
       createdAt: Timestamp.now(),
+      uid:userData.uid,
     };
-    
-    
-
     
     await addDoc(collection(db, "tickets"), docData);
     console.log("Document written");
@@ -66,11 +72,6 @@
   </label>
 
   <label>
-    <p class={tenant?'above':'center'}>Tenant</p>
-    <input bind:value={tenant} type="text" placeholder="Tenant" />
-  </label>
-
-  <label>
     <p class={category?'above':'center'}>Category</p>
     <input bind:value={category} type="text" placeholder="Category" />
   </label>
@@ -79,6 +80,15 @@
     <p class={priority?'above':'center'}>priority</p>
     <input bind:value={priority} type="text" placeholder="priority" />
   </label>
+
+  <label for="status">Select Status:</label>
+  <select id="status" bind:value={selectedStatus}>
+    <option value="">Select Status</option>
+    {#each statusOptions as option (option)}
+      <option value={option}>{option}</option>
+    {/each}
+  </select>
+  
 
   <button class="submit-btn" on:click={newProp} on:submit={newProp}>
     {#if error}

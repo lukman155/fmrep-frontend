@@ -1,12 +1,12 @@
 <script>
 	import { isLoggedIn, userAuth } from '../store/authStore.js';
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 	import { auth, db } from './../lib/firebase/firebase.js';
   import { doc, getDoc, setDoc } from "firebase/firestore";
 
+  let unsubscribe;
   onMount(() => {
-
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
       isLoggedIn.update(() => true);
       console.log('logged in')
@@ -19,8 +19,11 @@
         document.cookie = `isLoggedIn=false; max-age=3600`;
       }
     });
-    unsubscribe()
   }); 
+
+  onDestroy(() => {
+    unsubscribe;
+  })
 
 </script>
 
