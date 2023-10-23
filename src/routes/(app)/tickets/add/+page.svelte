@@ -48,6 +48,7 @@ const unsubscribe = userAuth.subscribe((user) => {
       priority,
       createdAt: Timestamp.now(),
       uid:userData.uid,
+      status:selectedStatus.toLowerCase(),
     };
     
     await addDoc(collection(db, "tickets"), docData);

@@ -8,9 +8,7 @@
   
   const tickets = [];
   let data = []
-  let activeTickets;
-  let completeTickets;
-  let num;
+
 
 let unsubscribe;
 
@@ -37,13 +35,37 @@ let unsubscribe;
     return tickets
   }
 
-  const metrics = async() => {
+  const metrics = {
+    all : async () => {
     const q = query(collection(db, "tickets"));
     let totalTickets = await getCountFromServer(q);
-    num = totalTickets.data().count
+    let num = totalTickets.data().count
     return num
-    // activeTickets = await getCountFromServer(collectionRef).data();
-    // completeTickets = await getCountFromServer(collectionRef).data();
+    },
+    active : async () => {
+    const q = query(collection(db, "tickets"), where("status", "==", "pending"));
+    let totalTickets = await getCountFromServer(q);
+    let num = totalTickets.data().count
+    return num
+    },
+    completed : async () => {
+    const q = query(collection(db, "tickets"), where("status", "==", "completed"));
+    let totalTickets = await getCountFromServer(q);
+    let num = totalTickets.data().count
+    return num
+    },
+    in_progress : async () => {
+    const q = query(collection(db, "tickets"), where("status", "==", "in progress"));
+    let totalTickets = await getCountFromServer(q);
+    let num = totalTickets.data().count
+    return num
+    },
+    canceled : async () => {
+    const q = query(collection(db, "tickets"), where("status", "==", "canceled"));
+    let totalTickets = await getCountFromServer(q);
+    let num = totalTickets.data().count
+    return num
+    },
   }
 
 
@@ -65,10 +87,34 @@ let unsubscribe;
 
 
   
-    {#await metrics()}
-    <p class="badge">Loading</p>
+    {#await metrics.all()}
+    <span class="badge">Loading</span>
     {:then num}
-    <p class="badge">Total Number of Tickets: {num}</p>
+    <span class="badge">Tickets: {num}</span>
+    {/await}
+
+    {#await metrics.active()}
+    <span class="badge">Loading</span>
+    {:then num}
+    <span class="badge status-pending">Pending: {num}</span>
+    {/await}
+
+    {#await metrics.in_progress()}
+    <span class="badge status-in">Loading</span>
+    {:then num}
+    <span class="badge">In Progress: {num}</span>
+    {/await}
+
+    {#await metrics.completed()}
+    <span class="badge">Loading</span>
+    {:then num}
+    <span class="badge status-completed">Completed: {num}</span>
+    {/await}
+
+    {#await metrics.canceled()}
+    <span class="badge">Loading</span>
+    {:then num}
+    <span class="badge status-Canceled">Canceled: {num}</span>
     {/await}
   
 
@@ -80,11 +126,12 @@ let unsubscribe;
               <th>Property</th>
               <th>Category</th>
               <th>Priority</th>
+              <th>Status</th>
           </tr>
       </thead>
       <tbody>
         {#each data as ticket}
-          <tr on:click={showTicket(ticket.ticket_name)}>
+          <tr class="status-{ticket.status}" on:click={showTicket(ticket.ticket_name)}>
             <td class="t-text">
               <i class="fa-regular fa-file-lines"></i>
               <p class="ticket-text">{ticket.ticket_name}<br>
@@ -93,6 +140,7 @@ let unsubscribe;
             <td>{ticket.address}</td>
             <td>{ticket.category}</td>
             <td>{ticket.priority}</td>
+            <td>{ticket.status}</td>
           </tr>
         {/each}
       </tbody>
@@ -107,37 +155,27 @@ let unsubscribe;
 
 <style>
 
-.skeleton-box {
-  display: inline-block;
-  height: 1em;
-  position: relative;
-  overflow: hidden;
-  background-color: #DDDBDD;
-
-  &::after {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-    background-image: linear-gradient(
-      90deg,
-      rgba(#fff, 0) 0,
-      rgba(#fff, 0.2) 20%,
-      rgba(#fff, 0.5) 60%,
-      rgba(#fff, 0)
-    );
-    animation: shimmer 5s infinite;
-    content: '';
+  td::first-letter {
+    text-transform: capitalize;
   }
 
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
-  }
+
+.status-pending {
+  background-color: rgba(49, 49, 49, 0.15) !important;
 }
+
+.status-in {
+  background-color: rgba(255, 221, 0, 0.15) !important;
+}
+
+.status-completed {
+  background-color: rgba(0, 253, 0, 0.15) !important;
+}
+
+.status-canceled {
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
+
 
   .t-text {
     display: flex;
@@ -172,11 +210,13 @@ let unsubscribe;
   }
 
   td, th {
-
     position: relative;
-    padding: .7em 0;
-    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: .7em 1em;
+    border: none;
+    border-bottom: 5px solid white;
   }
+
+  table { border-spacing: 0;}
 
   section {
     padding: 1em 2em;
