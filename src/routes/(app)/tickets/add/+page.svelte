@@ -1,26 +1,30 @@
 <script>
 	import { userAuth, x } from './../../../../store/authStore.js';
-	import { goto } from '$app/navigation';
   import { addDoc, collection, doc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
-  import { auth, db, storage } from "../../../../lib/firebase/firebase";
-  import { ref } from "firebase/storage";
-  import { writable } from 'svelte/store';
-  import { onMount } from 'svelte';
+  import { db } from "../../../../lib/firebase/firebase";
+	import ProgressBar from './ProgressBar.svelte';
+  import Form from './Form.svelte';
 
 
-  let y;
-  x.subscribe ((value) => {
-    y = value})
+	let steps = ['Category', 'Details', 'Confirmation'];
+  let currentActive = 1;
+  let progressBar;
+	
+	const handleProgress = (stepIncrement) => {
+		progressBar.handleProgress(stepIncrement)
+	}
 
+
+  let y = $x;
+  
   let selectedStatus = 'Pending';
   let ticket_name = 'Ticket'+ ' ' + y ;
-  let tenant = "Sami";
   let address = "no" + ' ' + y;
   let category = "category" + ' ' + y;
   let priority = "high";
   let loading = false;
   let error = false;
-  let userData;
+  let userData = $userAuth;
 
   const statusOptions = [
     'Pending',
@@ -29,25 +33,15 @@
     'Canceled',
   ];
 
-const unsubscribe = userAuth.subscribe((user) => {
-    if (user) {
-      userData = user
-      console.log(userData)
-    } else {
-      console.log('no user new')
-    }
-  });
-
 
   const newProp = async() => {
     const docData = {
       ticket_name,
-      tenant:userData.email,
       address,
       category,
       priority,
       createdAt: Timestamp.now(),
-      uid:userData.uid,
+      tenant_uid:userData.uid,
       status:selectedStatus.toLowerCase(),
     };
     
@@ -61,45 +55,14 @@ const unsubscribe = userAuth.subscribe((user) => {
 
 <a href="/tickets">Back</a>
 
-<form>
-  <label>
-    <p class={ticket_name?'above':'center'}>ticket_name</p>
-    <input bind:value={ticket_name} type="text" placeholder="ticket_name" />
-  </label>
 
-  <label>
-    <p class={address?'above':'center'}>Address</p>
-    <input bind:value={address} type="text" placeholder="Address" />
-  </label>
+<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
+		
+<Form active_step={steps[currentActive-1]}/>
 
-  <label>
-    <p class={category?'above':'center'}>Category</p>
-    <input bind:value={category} type="text" placeholder="Category" />
-  </label>
-
-  <label>
-    <p class={priority?'above':'center'}>priority</p>
-    <input bind:value={priority} type="text" placeholder="priority" />
-  </label>
-
-  <label for="status">Select Status:</label>
-  <select id="status" bind:value={selectedStatus}>
-    <option value="">Select Status</option>
-    {#each statusOptions as option (option)}
-      <option value={option}>{option}</option>
-    {/each}
-  </select>
-  
-
-  <button class="submit-btn" on:click={newProp} on:submit={newProp}>
-    {#if error}
-      Try Again
-    {:else if loading}
-      <i class="fa-solid fa-spinner spin"></i>
-    {:else}
-      Submit
-    {/if}
-  </button>
-</form>
+<div class="step-button">
+  <button class="btn" on:click={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+  <button class="btn" on:click={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+</div>
 
 Add properties

@@ -80,24 +80,29 @@
   <form>
     <h1>{register? 'Register' : 'Login'}</h1>
     
-    <label>
-      {#if error}
+    {#if error}
     <p class="error">{errorMsg}</p>
     {/if}
+
+    <label>
       <p class={email?'above':'center'}>Email</p>
       <input bind:value={email} type="email" placeholder="Email" />
     </label>
+
     <label>
       <p class={password?'above':'center'}>Password</p>
-
       <input bind:value={password} type="password" placeholder="Password" />
     </label>
+
     {#if register}
+
       <label>
         <p class={confirmPass?'above':'center'}>Confirm Password</p>
         <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
       </label>
+
     {/if}
+    
     <button on:submit={handleAuthenticate} on:click={handleAuthenticate} class="submit-btn">
       {#if error}
       Try Again
