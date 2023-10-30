@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="149" height="124" viewBox="0 0 149 124">
+  <g id="Group_854" data-name="Group 854" transform="translate(-37 -2320)">
+    <g id="Rectangle_3" data-name="Rectangle 3" transform="translate(37 2320)" fill="#fff" stroke="#707070" stroke-width="5">
+      <rect width="149" height="124" stroke="none"/>
+      <rect x="2.5" y="2.5" width="144" height="119" fill="none"/>
+    </g>
+    <g id="stair" transform="translate(67.341 2348.782)">
+      <path id="Path_130" data-name="Path 130" d="M76.6,22.941a3.926,3.926,0,0,0-3.926,3.926V49.116H51.734V26.867A3.926,3.926,0,0,0,44.2,25.33L21.248,2.383A1.309,1.309,0,0,0,20.323,2H3.309A1.309,1.309,0,0,0,2,3.309V37.337a1.309,1.309,0,0,0,.383.925L44.265,80.144a1.318,1.318,0,0,0,.925.383H79.218a1.309,1.309,0,0,0,1.309-1.309V26.867A3.926,3.926,0,0,0,76.6,22.941ZM4.618,9.853h9.161V33.411H4.618ZM43.881,76.059,4.618,36.8v-.767h9.161v3.926a1.309,1.309,0,0,0,1.309,1.309h9.161V45.19A1.309,1.309,0,0,0,25.558,46.5H34.72v3.926a1.309,1.309,0,0,0,1.309,1.309h7.853ZM16.4,38.646V9.853h.767l7.086,7.086V38.646Zm10.47,5.235V19.556l7.853,7.853V43.881Zm17.014,5.235H37.337V30.026l6.544,6.544Zm0-16.247L18.631,7.619a1.309,1.309,0,0,0-.925-.383H4.618V4.618H19.781l24.1,24.1ZM49.116,77.91H46.5V30.793h2.618Zm0-49.734H46.5V26.867a1.309,1.309,0,1,1,2.618,0ZM72.674,77.91H51.734V72.674H72.674Zm0-7.853H51.734V64.822H72.674Zm0-7.853H51.734V56.969H72.674Zm0-7.853H51.734V51.734H72.674ZM77.91,77.91H75.292V30.793H77.91Zm0-49.734H75.292V26.867a1.309,1.309,0,0,1,2.618,0Z" transform="translate(-2 -2)" fill="#4a9a47" stroke="#4a9a47" stroke-width="1"/>
+      <path id="Path_131" data-name="Path 131" d="M27.161,38H18v2.618h6.544v5.235h9.161v5.235h2.618V43.235H27.161Z" transform="translate(2.941 9.116)" fill="#4a9a47" stroke="#4a9a47" stroke-width="1"/>
+      <path id="Path_132" data-name="Path 132" d="M30,50h2.618v2.618H30Z" transform="translate(6.646 12.822)" fill="#4a9a47" stroke="#4a9a47" stroke-width="1"/>
+      <path id="Path_133" data-name="Path 133" d="M15,34h2.618v2.618H15Z" transform="translate(2.014 7.881)" fill="#4a9a47" stroke="#4a9a47" stroke-width="1"/>
+    </g>
+  </g>
+</svg>

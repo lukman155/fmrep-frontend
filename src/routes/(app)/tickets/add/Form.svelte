@@ -131,10 +131,7 @@
 			<button class="btn submit">Finish </button>
 		</div>
 
-	{/if}
-</form>
-
-
+    
   <!-- <button class="submit-btn" on:click={newProp} on:submit={newProp}>
     {#if error}
       Try Again
@@ -144,6 +141,11 @@
       Submit
     {/if}
   </button> -->
+
+	{/if}
+</form>
+
+
 
 
   <style>

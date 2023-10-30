@@ -48,7 +48,7 @@
 <nav class="side-menu">
   <div class="top links">
     
-    <a class="menu-item logo" href='/'>FMRepEx</a>
+    <a class="menu-item logo" href='/'><img src="/favicon.png" alt=""></a>
 
     {#each menuItems as item (item.text)}
       <a class="menu-item {item.link} {currentRoute == '/'+item.link? 'active': ''}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
@@ -62,6 +62,16 @@
 </nav>
 
 <style>
+
+  .logo {
+    align-self: center;
+    width: 80px;
+    
+  }
+
+  .logo > img {
+    width: 100%;
+  }
 
   .active.support, .active.support > .fa {
     background-color: rgba(0, 80, 36, 0.788);

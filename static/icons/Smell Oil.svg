@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="149" height="124" viewBox="0 0 149 124">
+  <g id="Group_858" data-name="Group 858" transform="translate(-39 -2524)">
+    <g id="Rectangle_3" data-name="Rectangle 3" transform="translate(39 2524)" fill="#fff" stroke="#707070" stroke-width="5">
+      <rect width="149" height="124" stroke="none"/>
+      <rect x="2.5" y="2.5" width="144" height="119" fill="none"/>
+    </g>
+    <g id="oil" transform="translate(74.95 2566.25)">
+      <g id="Group_83" data-name="Group 83" transform="translate(0 0)">
+        <g id="Group_82" data-name="Group 82">
+          <path id="Path_143" data-name="Path 143" d="M78.734,146.27l-26.288,6.59-3.7-3.7H33.5v-3.833h5.755v-5.292H22.45v5.292H28.2v3.833H0v16.659H9.955v12.456H51.379l19.9-24.684,5.829-1.461L80.977,156l3.742-3.742ZM9.955,160.529H5.292v-6.075H9.955Zm38.894,12.456h-33.6V154.454H46.556l4.268,4.268,11.938-2.993Z" transform="translate(0 -140.037)" fill="#4a9a47"/>
+        </g>
+      </g>
+      <g id="Group_85" data-name="Group 85" transform="translate(75.367 20.748)">
+        <g id="Group_84" data-name="Group 84" transform="translate(0 0)">
+          <path id="Path_144" data-name="Path 144" d="M440.722,265.948l-6.041-8.307-6.041,8.307a7.469,7.469,0,1,0,12.082,0Zm-4.5,5.933a2.177,2.177,0,0,1-3.3-2.82l1.761-2.421,1.761,2.421A2.167,2.167,0,0,1,436.221,271.88Z" transform="translate(-427.201 -257.641)" fill="#4a9a47"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
