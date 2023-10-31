@@ -9,14 +9,12 @@
 
   $: currentRoute = $page.route.id;
 
-  let name;
   let email;
 
   onMount(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-      email = auth?.currentUser?.email
-      
+        email = auth?.currentUser?.email
       } else {
         
       }

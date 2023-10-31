@@ -3,6 +3,11 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    goto('login')
+    
   })
 </script>
+
+
+<main>
+  <h1>Redirecting to l0ogin...</h1>
+</main>
