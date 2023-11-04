@@ -1,8 +1,7 @@
 <script>
 	import { isLoggedIn, userAuth } from '../store/authStore.js';
   import { onDestroy, onMount } from "svelte";
-	import { auth, db } from './../lib/firebase/firebase.js';
-  import { doc, getDoc, setDoc } from "firebase/firestore";
+	import { auth } from './../lib/firebase/firebase.js';
 
   let unsubscribe;
   onMount(() => {
