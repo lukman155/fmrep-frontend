@@ -9,6 +9,9 @@
   </div>
 <div class="about">
   <h1>Welcome to FMRepEX</h1>
+  <p>
+    At FMRepex, we're on a mission to transform the way you manage your facilities. Our cutting-edge platform empowers you with the tools and insights you need to streamline operations, enhance efficiency, and optimize costs. Whether you're responsible for a single building or a sprawling campus, FMRepex is your key to unlocking a new era of facility management.
+  </p>
   <div class="links">
     <a href="/login" class="login button">Login</a>
     <a href="#about" class="login button">About</a>
@@ -18,6 +21,10 @@
 </div>
 
 <style>
+
+  p {
+    margin-bottom: 2em;
+  }
 
   .button {
     border: 5px solid white;
