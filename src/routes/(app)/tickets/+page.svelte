@@ -1,14 +1,22 @@
 <script>
+	import Badge from './Badge.svelte';
 
   import { collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
   import { db } from "../../../lib/firebase/firebase";
   import { onDestroy, onMount } from "svelte";
+  import TicketDetails from "./TicketDetails.svelte";
 
   const collectionRef = collection(db, "tickets");
   
   const tickets = [];
   let data = []
+  let showModal = false;
 
+  let selectedTicket;
+  function showTicketDetails(ticket) {
+    selectedTicket = ticket;
+    showModal = !showModal;
+  }
 
 let unsubscribe;
 
@@ -35,49 +43,39 @@ let unsubscribe;
     return tickets
   }
 
-  const metrics = {
-    all : async () => {
-    const q = query(collection(db, "tickets"));
-    let totalTickets = await getCountFromServer(q);
-    let num = totalTickets.data().count
-    return num
-    },
-    active : async () => {
-    const q = query(collection(db, "tickets"), where("status", "==", "pending"));
-    let totalTickets = await getCountFromServer(q);
-    let num = totalTickets.data().count
-    return num
-    },
-    completed : async () => {
-    const q = query(collection(db, "tickets"), where("status", "==", "completed"));
-    let totalTickets = await getCountFromServer(q);
-    let num = totalTickets.data().count
-    return num
-    },
-    in_progress : async () => {
-    const q = query(collection(db, "tickets"), where("status", "==", "in progress"));
-    let totalTickets = await getCountFromServer(q);
-    let num = totalTickets.data().count
-    return num
-    },
-    canceled : async () => {
-    const q = query(collection(db, "tickets"), where("status", "==", "canceled"));
-    let totalTickets = await getCountFromServer(q);
-    let num = totalTickets.data().count
-    return num
-    },
+  async function getCountByStatus(status) {
+    if (status) {
+      const q = query(collection(db, "tickets"), where("status", "==", status));
+      let totalTickets = await getCountFromServer(q);
+      return totalTickets.data().count;
+    } else {
+      const q = query(collection(db, "tickets"));
+      let totalTickets = await getCountFromServer(q);
+      return totalTickets.data().count;
+    }
   }
 
+const metrics = {
+  all: async () => getCountByStatus(),
+  active: async () => getCountByStatus("pending"),
+  completed: async () => getCountByStatus("completed"),
+  in_progress: async () => getCountByStatus("in progress"),
+  canceled: async () => getCountByStatus("canceled"),
+};
 
-  const showTicket = (x) => {
-    console.log(x)
-  };
+  let metrics1 = [
+    { label: "Tickets", query: metrics.all, stateClass: "" },
+    { label: "Pending", query: metrics.active, stateClass: "pending" },
+    { label: "In Progress", query: metrics.in_progress, stateClass: "in" },
+    { label: "Completed", query: metrics.completed, stateClass: "completed" },
+    { label: "Canceled", query: metrics.canceled, stateClass: "canceled" },
+  ];
 
 </script>
 
 
-
 <section>
+<TicketDetails ticket = {selectedTicket} show={showModal} />
   <div class="title">
     <h1>Tickets</h1>
     <p>Manage all your Properties Maintenance Tickets</p>
@@ -85,39 +83,15 @@ let unsubscribe;
 
   <h2>Maintenance Tickets</h2>
 
-
-  
-    {#await metrics.all()}
-    <span class="badge">Loading</span>
+  <div class="status-badges">
+  {#each metrics1 as { label, query }}
+  {#await query()}
+    <Badge label={label} loading={true}  />
     {:then num}
-    <span class="badge">Tickets: {num}</span>
-    {/await}
-
-    {#await metrics.active()}
-    <span class="badge">Loading</span>
-    {:then num}
-    <span class="badge status-pending">Pending: {num}</span>
-    {/await}
-
-    {#await metrics.in_progress()}
-    <span class="badge status-in">Loading</span>
-    {:then num}
-    <span class="badge status-in">In Progress: {num}</span>
-    {/await}
-
-    {#await metrics.completed()}
-    <span class="badge">Loading</span>
-    {:then num}
-    <span class="badge status-completed">Completed: {num}</span>
-    {/await}
-
-    {#await metrics.canceled()}
-    <span class="badge">Loading</span>
-    {:then num}
-    <span class="badge status-canceled">Canceled: {num}</span>
-    {/await}
-  
-
+    <Badge label={label} num={num}  />
+  {/await}
+{/each}
+</div>
   
   <table>
       <thead>
@@ -131,11 +105,11 @@ let unsubscribe;
       </thead>
       <tbody>
         {#each data as ticket}
-          <tr class="status-{ticket.status}" on:click={showTicket(ticket.ticket_name)}>
+          <tr class="status-{ticket.status}" on:click={() => showTicketDetails(ticket)}>
             <td class="t-text">
               <i class="fa-regular fa-file-lines"></i>
-              <p class="ticket-text">{ticket.ticket_name}<br>
-                <span class="submit-badge">Submitted by {ticket.tenant}</span></p>
+              <p class="ticket-text">{ticket.issue}<br>
+              <span class="submit-badge">Submitted by {ticket.tenant_email}</span></p>
             </td>
             <td>{ticket.address}</td>
             <td>{ticket.category}</td>
@@ -144,6 +118,7 @@ let unsubscribe;
           </tr>
         {/each}
       </tbody>
+
   </table>
 
   <a href="/tickets/add">Add Property</a>
@@ -159,22 +134,12 @@ let unsubscribe;
     text-transform: capitalize;
   }
 
+  .status-badges {
+    display: flex;
+    gap: 10px;
+  }
 
-.status-pending {
-  background-color: rgba(49, 49, 49, 0.15) !important;
-}
 
-.status-in {
-  background-color: rgba(255, 221, 0, 0.15) !important;
-}
-
-.status-completed {
-  background-color: rgba(0, 253, 0, 0.15) !important;
-}
-
-.status-canceled {
-  background-color: rgba(255, 0, 0, 0.1) !important;
-}
 
 
   .t-text {
@@ -222,13 +187,7 @@ let unsubscribe;
     padding: 1em 2em;
   }
 
-  .badge {
-    width: fit-content;
-    border-radius: 10px;
-    padding: .4em .8em;
-    background-color: rgba(255, 204, 0, 0.404);
-    font-size: .7em;
-  }
+
 
   h1, h2, p {
     margin: 0;

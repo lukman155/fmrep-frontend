@@ -5,17 +5,21 @@
 
   let unsubscribe;
   onMount(() => {
+    
     unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
       isLoggedIn.update(() => true);
-      console.log('logged in')
-      $userAuth = user
-      document.cookie = `isLoggedIn=true; max-age=3600`;
-      
+      userAuth.set({
+      uid: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+    });
+      document.cookie = `isLoggedIn=true; max-age=3600`;      
       } else {
         isLoggedIn.update(() => false)
         console.log('logged out')
         document.cookie = `isLoggedIn=false; max-age=3600`;
+        userStore.set(null);
       }
     });
   }); 

@@ -10,6 +10,7 @@
   let errorMsg;
   let register = false;
   let authenticating = false;
+  let isAdmin;
 
   const auth = getAuth();
 
@@ -47,6 +48,22 @@
             console.log(errorCode, errorMessage);
           });
       } else {
+      // Create an admin account if the user has selected the checkbox.
+      if (isAdmin) {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            user.customClaims = { admin: true };
+            $userAuth = user;
+            document.cookie = `isLoggedIn=true; max-age=3600`;
+            goto('/dashboard');
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
+          });
+      } else {
         createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
             $userAuth = userCredential.user
@@ -59,14 +76,14 @@
             console.log(errorCode, errorMessage);
           });
       }
-    } catch (err) {
-      console.log('There was an auth error', err);
-      error = true;
-      errorMsg = err;
-      authenticating = false;
     }
-
+  } catch (err) {
+    console.log('There was an auth error', err);
+    error = true;
+    errorMsg = err;
+    authenticating = false;
   }
+}
 
 
   const handleRegister = () => {
@@ -86,20 +103,24 @@
 
     <label>
       <p class={email?'above':'center'}>Email</p>
-      <input bind:value={email} type="email" placeholder="Email" />
+      <input autocomplete="email" bind:value={email} type="email" placeholder="Email" />
     </label>
 
     <label>
       <p class={password?'above':'center'}>Password</p>
-      <input bind:value={password} type="password" placeholder="Password" />
+      <input autocomplete="current-password" bind:value={password} type="password" placeholder="Password" />
     </label>
 
     {#if register}
 
       <label>
         <p class={confirmPass?'above':'center'}>Confirm Password</p>
-        <input bind:value={confirmPass} type="password" placeholder="Confirm Password" />
+        <input autocomplete="current-password" bind:value={confirmPass} type="password" placeholder="Confirm Password" />
       </label>
+
+      <label for="adminCheckbox">Create an admin account</label>
+      <input id="adminCheckbox" type="checkbox" name="isAdmin" bind:checked={isAdmin} />
+
 
     {/if}
     

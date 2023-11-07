@@ -1,16 +1,26 @@
 <script>
+  import { Timestamp, addDoc, collection } from 'firebase/firestore';
 	import InputField from './InputField.svelte';
+  import { userAuth } from '../../../../store/authStore';
+  import { db } from '../../../../lib/firebase/firebase';
 	export let active_step;
 	let formData = {
-    issue: '',
-    address: '',
-    description: 'Ticket',
-    status: 'Pending',
-    category: '',
-    priority: 'Low',
+    issue: ''.toLowerCase(),
+    address: ''.toLowerCase(),
+    description: 'Ticket'.toLowerCase(),
+    status: 'Pending'.toLowerCase(),
+    category: ''.toLowerCase(),
+    priority: 'Low'.toLowerCase(),
 	}
 
   let selectedCategory = '';
+  let userData = $userAuth;
+  const handle = () => {
+    console.log(userData)
+  }
+
+
+
 
   const maintenanceCategories = [
   {
@@ -64,25 +74,37 @@
 ];
 
   const statusOptions = [
-    'Pending',
-    'In Progress',
-    'Completed',
-    'Canceled',
+    'pending',
+    'in progress',
+    'completed',
+    'canceled',
   ];
 
   const priorityOptions = [
-    'Low',
-    'Medium',
-    'High',
+    'low',
+    'medium',
+    'high',
   ];
 	
-	const handleSubmit = () => {
-		console.log("Your form data => ",formData)
-	}
+
+  const newProp = async() => {
+    const docData = {
+      ...formData,
+      createdAt: Timestamp.now(),
+      tenant_uid: userData.uid,
+      tenant_email: userData.email,
+    };
+    
+    console.log(docData);
+
+    await addDoc(collection(db, "tickets"), docData);
+    console.log("Document written");
+    history.back()
+  };
 
 </script>
 
-<form class="form-container" on:submit={handleSubmit}>
+<form class="form-container" on:submit={newProp}>
 	
   {#if active_step == 'Category'}
 
@@ -128,7 +150,7 @@
 
 		<div class="message">
 			<h2>Thank you for choosing us</h2>
-			<button class="btn submit">Finish </button>
+			<button on:click={() => handle()} class="btn submit">Finish </button>
 		</div>
 
     
