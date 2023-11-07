@@ -78,6 +78,7 @@
     history.back()
   };
 
+
 </script>
 
 <form class="form-container" on:submit={newProp}>
@@ -143,7 +144,7 @@
         <p><strong>Status:</strong> {formData.status}</p>
     </div>
       <div class="submit-btn">
-        <Button text='Submit Ticket' clickHandler={() => handle()} />
+        <Button color='green' bg-color='' text='Submit Ticket' clickHandler={() => handle()} />
       </div>
 		</div>
 
@@ -151,6 +152,12 @@
 </form>
 
   <style>
+
+    .green {
+      color: white !important;
+      background-color: green !important;
+      width: 10em;
+    }
 
     .submit-btn {
       align-self: center;

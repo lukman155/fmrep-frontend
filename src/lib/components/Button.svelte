@@ -1,6 +1,16 @@
 <script>
   export let text = "Button";
   export let clickHandler;
+	
+  let className = ''; 
+  export {className as class}
+
+  // const formatToHTMLStyleFromObject = (styleObj) => {
+  //     return Object.entries(style).reduce((acc, [key, value]) => `${acc} ${key}: ${value};`, '');
+  // };
+
+  // $: styleHTML = formatToHTMLStyleFromObject(style);
+  
 
   function handleClick() {
     if (clickHandler) {
@@ -9,7 +19,7 @@
   }
 </script>
 
-<button on:click={handleClick}>{text}</button>
+<button class={className} on:click={handleClick}>{text}</button>
 
 <style>
   button {
