@@ -4,6 +4,7 @@
 	import InputField from './InputField.svelte';
   import { userAuth } from '../../../../store/authStore';
   import { db } from '../../../../lib/firebase/firebase';
+  import TextArea from './TextArea.svelte';
 	export let active_step;
 
   let selectedCategory = '';
@@ -11,7 +12,7 @@
 	let formData = {
     issue: ''.toLowerCase(),
     address: ''.toLowerCase(),
-    description: 'Ticket'.toLowerCase(),
+    description: ''.toLowerCase(),
     status: 'Pending'.toLowerCase(),
     priority: 'Low'.toLowerCase(),
 	}
@@ -105,28 +106,33 @@
     <InputField label={'Issue'} bind:value={formData.issue} />
     <InputField label={'Address'} bind:value={formData.address} />
 
-    <label for="desc"> 
-      <p>Description:</p>
-      <textarea bind:value={formData.description} name="description" id="desc" cols="30" rows="10"></textarea>
-    </label>
+    <TextArea label={'Description'} bind:value={formData.description}/>
 
-    <label for="priority">
-      <p>Select Priority:</p>
-      <select id="priority" bind:value={formData.priority}>
-        {#each priorityOptions as option (option)}
-          <option value={option}>{option}</option>
-        {/each}
-      </select>
-    </label>
+
+
+    <div class="side">
+
+      <label for="priority">
+        <p>Select Priority:</p>
+        <select id="priority" bind:value={formData.priority}>
+          {#each priorityOptions as option (option)}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
+      </label>
+      
+      <label for="status">
+        <p>Select Status:</p>
+        <select id="status" bind:value={formData.status}>
+          {#each statusOptions as option (option)}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
+      </label>
+
+    </div>
+
     
-    <label for="status">
-      <p>Select Status:</p>
-      <select id="status" bind:value={formData.status}>
-        {#each statusOptions as option (option)}
-          <option value={option}>{option}</option>
-        {/each}
-      </select>
-    </label>
 
   </div>
 
@@ -141,7 +147,7 @@
         <p><strong>Address:</strong> {formData.address}</p>
         <p><strong>Description:</strong> {formData.description}</p>
         <p><strong>Priority:</strong> {formData.priority}</p>
-        <p><strong>Status:</strong> {formData.status}</p>
+        <p><strong>Status:</strong>{formData.status}</p>
     </div>
       <div class="submit-btn">
         <Button color='green' bg-color='' text='Submit Ticket' clickHandler={() => handle()} />
@@ -153,10 +159,20 @@
 
   <style>
 
-    .green {
-      color: white !important;
-      background-color: green !important;
-      width: 10em;
+    .details-card > p {
+      margin-bottom: 1em;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.144);
+    }
+
+    select { 
+      font-size: 1em;
+      padding: 5px 10px;
+      border-radius: 10px;
+    }
+
+    .side {
+      display: flex;
+      gap: 2em;
     }
 
     .submit-btn {
@@ -191,7 +207,7 @@
     }
   .details-step {
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
   }
 
     .selected {

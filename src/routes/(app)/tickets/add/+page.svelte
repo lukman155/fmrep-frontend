@@ -17,13 +17,7 @@
 	}
 
 
-  let y = $x;
-  
-  let selectedStatus = 'Pending';
-  let ticket_name = 'Ticket'+ ' ' + y ;
-  let address = "no" + ' ' + y;
-  let category = "category" + ' ' + y;
-  let priority = "high";
+
   let loading = false;
   let error = false;
   let userData = $userAuth;
@@ -50,7 +44,6 @@
     await addDoc(collection(db, "tickets"), docData);
     console.log("Document written");
     history.back()
-    x.update((x) => x + 1)
   };
 
 </script>

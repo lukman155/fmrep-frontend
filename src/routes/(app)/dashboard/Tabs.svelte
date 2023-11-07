@@ -41,7 +41,9 @@
 
 
   {#if activeTab == 'Tickets' }
-  <p>Loading...</p>
+  <p>
+    
+  </p>
   {/if}
 
   {#if activeTab == 'Tenants' }

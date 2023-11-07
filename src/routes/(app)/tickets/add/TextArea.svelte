@@ -1,23 +1,18 @@
 <script>
-	export let value, label, type = 'text';
+	export let value, label;
 	
-	function typeAction(node){
-		node.type = type;
-	}
 </script>
 
 
-<label>
+
+<label> 
   <p class={value?'above':'center'}>{label}</p>
-	<input use:typeAction class="input" bind:value={value} placeholder={value}/>
+  <textarea bind:value={value} name="description" id="desc" cols="30" rows="10"></textarea>
 </label>
-
-
-
 
 <style>
 	
-.above, .center {
+  .above, .center {
     position: absolute;
     transform: translateY(-50%);
     pointer-events: none;
@@ -39,13 +34,13 @@
 
   .center{
 		color: rgba(0, 0, 0, 0.7);
-    top: 50%;
-    left: 12px;
+    top: 10%;
+    left: 10px;
     border: 1px solid transparent;
     opacity: 1;
   }
 
-label {
+  label {
 		display: block;
     position: relative;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -54,23 +49,21 @@ label {
 		margin-bottom: 1em;
   }
 
-label:focus-within {
+  label:focus-within {
     border: 1px solid black;
   }
 
-input {
+  textarea {
     border: none;
     background: transparent;
     color: black;
     padding: .8em;
-    font-size: 1em;
+    font-size: 1.2em;
     width: 96%;
-
   }
 
-input:focus{
+  textarea:focus{
     border: none;
     outline: none;
   }
-
 </style>

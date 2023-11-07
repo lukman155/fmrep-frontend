@@ -71,7 +71,6 @@
     background-color: white;
     padding: 20px;
     border-radius: 10px; /* Increase border radius for rounded corners */
-    width: 90%; /* Increase the maximum width */
     overflow: auto;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
     position: relative;
@@ -88,7 +87,8 @@
   .details {
     margin-top: 20px;
     display: flex;
-
+    justify-content: center;
+    gap: 20em;
   }
 
   h3 {
