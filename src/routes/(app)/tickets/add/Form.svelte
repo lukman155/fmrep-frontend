@@ -1,4 +1,5 @@
 <script>
+	import Button from './../../../../lib/components/Button.svelte';
   import { Timestamp, addDoc, collection } from 'firebase/firestore';
 	import InputField from './InputField.svelte';
   import { userAuth } from '../../../../store/authStore';
@@ -98,11 +99,16 @@
   </label>
 
 	{:else if active_step == 'Details'}
+  <div class="details-step">
 
-  <InputField label={'Issue'} bind:value={formData.issue} />
-		<InputField label={'Address'} bind:value={formData.address} />
-		<InputField label={'Description'} bind:value={formData.description} />    
-    
+    <InputField label={'Issue'} bind:value={formData.issue} />
+    <InputField label={'Address'} bind:value={formData.address} />
+
+    <label for="desc"> 
+      <p>Description:</p>
+      <textarea bind:value={formData.description} name="description" id="desc" cols="30" rows="10"></textarea>
+    </label>
+
     <label for="priority">
       <p>Select Priority:</p>
       <select id="priority" bind:value={formData.priority}>
@@ -121,32 +127,65 @@
       </select>
     </label>
 
+  </div>
 
     {:else if active_step == 'Confirmation'}
 
-		<div class="message">
-			<h2>Thank you for choosing us</h2>
-			<button on:click={() => handle()} class="btn submit">Finish </button>
+		<div class="con-step">
+      <p>Please take a moment to review your ticket details before submitting.</p>
+      <div class="details-card">
+        <h3>Ticket Details:</h3>
+        <p><strong>Category:</strong> {selectedCategory}</p>
+        <p><strong>Issue:</strong> {formData.issue}</p>
+        <p><strong>Address:</strong> {formData.address}</p>
+        <p><strong>Description:</strong> {formData.description}</p>
+        <p><strong>Priority:</strong> {formData.priority}</p>
+        <p><strong>Status:</strong> {formData.status}</p>
+    </div>
+      <div class="submit-btn">
+        <Button text='Submit Ticket' clickHandler={() => handle()} />
+      </div>
 		</div>
-
-    
-  <!-- <button class="submit-btn" on:click={newProp} on:submit={newProp}>
-    {#if error}
-      Try Again
-    {:else if loading}
-      <i class="fa-solid fa-spinner spin"></i>
-    {:else}
-      Submit
-    {/if}
-  </button> -->
 
 	{/if}
 </form>
 
-
-
-
   <style>
+
+    .submit-btn {
+      align-self: center;
+    }
+
+    .details-card {
+    border-radius: 10px; /* Adjust the radius for rounded edges */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adjust the shadow as needed */
+    padding: 20px; /* Add padding for spacing inside the card */
+    background-color: #fff;
+  }
+
+  .details-card > h3 {
+    text-align: center;
+  }
+
+    .form-container {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+
+    .con-step {
+      width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    
+    gap: 2em;
+    }
+  .details-step {
+    width: 100%;
+    max-width: 800px;
+  }
 
     .selected {
       background-color: rgb(97, 215, 220);
@@ -193,9 +232,5 @@
 
     }
 
-    .fas {
-      font-size: 5em;
-      width: 100%;
-    }
 
   </style>

@@ -5,6 +5,7 @@
   import { db } from "../../../lib/firebase/firebase";
   import { onDestroy, onMount } from "svelte";
   import TicketDetails from "./TicketDetails.svelte";
+  import Link from '../../../lib/components/Link.svelte';
 
   const collectionRef = collection(db, "tickets");
   
@@ -55,20 +56,13 @@ let unsubscribe;
     }
   }
 
-const metrics = {
-  all: async () => getCountByStatus(),
-  active: async () => getCountByStatus("pending"),
-  completed: async () => getCountByStatus("completed"),
-  in_progress: async () => getCountByStatus("in progress"),
-  canceled: async () => getCountByStatus("canceled"),
-};
 
-  let metrics1 = [
-    { label: "Tickets", query: metrics.all, stateClass: "" },
-    { label: "Pending", query: metrics.active, stateClass: "pending" },
-    { label: "In Progress", query: metrics.in_progress, stateClass: "in" },
-    { label: "Completed", query: metrics.completed, stateClass: "completed" },
-    { label: "Canceled", query: metrics.canceled, stateClass: "canceled" },
+  let metrics = [
+    { label: "Tickets", query: async () => getCountByStatus(), stateClass: "" },
+    { label: "Pending", query: async () => getCountByStatus("pending"), stateClass: "pending" },
+    { label: "In Progress", query: async () => getCountByStatus("in progress"), stateClass: "in" },
+    { label: "Completed", query: async () => getCountByStatus("completed"), stateClass: "completed" },
+    { label: "Canceled", query: async () => getCountByStatus("canceled"), stateClass: "canceled" },
   ];
 
 </script>
@@ -79,14 +73,13 @@ const metrics = {
   <div class="title">
     <h1>Tickets</h1>
     <p>Manage all your Properties Maintenance Tickets</p>
-    <a href="/tickets/add">Add Ticket</a>
-  
+    <Link to="/tickets/add" text='Add Ticket'/>
   </div>
 
   <h2>Maintenance Tickets</h2>
 
   <div class="status-badges">
-  {#each metrics1 as { label, query }}
+  {#each metrics as { label, query }}
   {#await query()}
     <Badge label={label} loading={true}  />
     {:then num}
