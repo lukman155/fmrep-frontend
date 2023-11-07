@@ -79,6 +79,8 @@ const metrics = {
   <div class="title">
     <h1>Tickets</h1>
     <p>Manage all your Properties Maintenance Tickets</p>
+    <a href="/tickets/add">Add Ticket</a>
+  
   </div>
 
   <h2>Maintenance Tickets</h2>
@@ -97,7 +99,7 @@ const metrics = {
       <thead>
           <tr>
               <th>Tickets</th>
-              <th>Property</th>
+              <th>Address</th>
               <th>Category</th>
               <th>Priority</th>
               <th>Status</th>
@@ -105,7 +107,7 @@ const metrics = {
       </thead>
       <tbody>
         {#each data as ticket}
-          <tr class="status-{ticket.status}" on:click={() => showTicketDetails(ticket)}>
+          <tr class="{ticket.status}" on:click={() => showTicketDetails(ticket)}>
             <td class="t-text">
               <i class="fa-regular fa-file-lines"></i>
               <p class="ticket-text">{ticket.issue}<br>
@@ -121,14 +123,20 @@ const metrics = {
 
   </table>
 
-  <a href="/tickets/add">Add Property</a>
-  <a href="/tickets/edit">Edit Property</a>
 
 
 </section>
 
 
 <style>
+
+  tr {
+    cursor: pointer;
+  }
+
+  tr:hover {
+    transform: scale(1.005);
+  }
 
   td::first-letter {
     text-transform: capitalize;
@@ -139,7 +147,21 @@ const metrics = {
     gap: 10px;
   }
 
+  .pending {
+  background-color: rgba(49, 49, 49, 0.15) !important;
+}
 
+.in {
+  background-color: rgba(255, 221, 0, 0.15) !important;
+}
+
+.completed {
+  background-color: rgba(0, 253, 0, 0.15) !important;
+}
+
+.canceled {
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
 
 
   .t-text {

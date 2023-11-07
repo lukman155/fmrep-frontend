@@ -4,16 +4,17 @@
   import { userAuth } from '../../../../store/authStore';
   import { db } from '../../../../lib/firebase/firebase';
 	export let active_step;
+
+  let selectedCategory = '';
+
 	let formData = {
     issue: ''.toLowerCase(),
     address: ''.toLowerCase(),
     description: 'Ticket'.toLowerCase(),
     status: 'Pending'.toLowerCase(),
-    category: ''.toLowerCase(),
     priority: 'Low'.toLowerCase(),
 	}
 
-  let selectedCategory = '';
   let userData = $userAuth;
   const handle = () => {
     console.log(userData)
@@ -23,55 +24,28 @@
 
 
   const maintenanceCategories = [
-  {
-    category: "Plumbing",
-    icon: "fa-wrench"
-  },
-  {
-    category: "Electrical",
-    icon: "fa-bolt"
-  },
-  {
-    category: "HVAC (Heating, Ventilation, and Air Conditioning)",
-    icon: "fa-temperature-high"
-  },
-  {
-    category: "Appliances",
-    icon: "fa-cogs"
-  },
-  {
-    category: "General Repairs",
-    icon: "fa-tools"
-  },
-  {
-    category: "Pest Control",
-    icon: "fa-bug"
-  },
-  {
-    category: "Locks and Keys",
-    icon: "fa-key"
-  },
-  {
-    category: "Exterior Maintenance",
-    icon: "fa-paint-roller"
-  },
-  {
-    category: "Safety and Security",
-    icon: "fa-shield-alt"
-  },
-  {
-    category: "Painting",
-    icon: "fa-paint-brush"
-  },
-  {
-    category: "Carpentry",
-    icon: "fa-hammer"
-  },
-  {
-    category: "Mold or Mildew",
-    icon: "fa-biohazard"
-  }
+  { category: "Alarms and smoke detectors", src: "icons/Alarms and smoke detectors.svg" },
+  { category: "Bathroom and Toilet", src: "icons/Bathroom and Toilet.svg" },
+  { category: "Doors, Garages and Locks", src: "icons/Doors, Garages and Locks.svg" },
+  { category: "Electricity", src: "icons/Electricity.svg" },
+  { category: "Exterior and Garden", src: "icons/Exterior and Garden.svg" },
+  { category: "Fire", src: "icons/Fire.svg" },
+  { category: "Furniture", src: "icons/Furniture.svg" },
+  { category: "Heater and boiler", src: "icons/Heater and boiler.svg" },
+  { category: "Internal Floors", src: "icons/Internal Floors.svg" },
+  { category: "Internet", src: "icons/Internet.svg" },
+  { category: "Kitchen", src: "icons/Kitchen.svg" },
+  { category: "Laundry", src: "icons/Laundry.svg" },
+  { category: "Lighting", src: "icons/Lighting.svg" },
+  { category: "Pests", src: "icons/Pests.svg" },
+  { category: "Roof", src: "icons/Roof.svg" },
+  { category: "Stairs", src: "icons/Stairs.svg" },
+  { category: "Utility Meters", src: "icons/Utility Meters.svg" },
+  { category: "Water and Leaks", src: "icons/Water and Leaks.svg" },
+  { category: "Windows", src: "icons/Windoows.svg" },
+  { category: "Other", src: "icons/Other.svg" }
 ];
+
 
   const statusOptions = [
     'pending',
@@ -90,6 +64,7 @@
   const newProp = async() => {
     const docData = {
       ...formData,
+      category: selectedCategory.toLowerCase(),
       createdAt: Timestamp.now(),
       tenant_uid: userData.uid,
       tenant_email: userData.email,
@@ -110,11 +85,12 @@
 
   <label>Select a Maintenance Category:
     <div class="cat-con">
-    {#each maintenanceCategories as { category, icon }}
+    {#each maintenanceCategories as { category, src }}
       <div class="cat-tile">
         <input type="radio" id={category} name="category" bind:group={selectedCategory} value={category} class:selected={selectedCategory === category} required>
         <label for={category}>
-          <i class="fas {icon}"></i> <p>{category}</p>
+          <img src=/{src} alt={category}>
+          <p>{category}</p>
         </label>
       </div>
     {/each}

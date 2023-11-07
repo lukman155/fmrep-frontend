@@ -26,7 +26,7 @@
     font-size: .7em;
   }
 
-  .pending {
+.pending {
   background-color: rgba(49, 49, 49, 0.15) !important;
 }
 
