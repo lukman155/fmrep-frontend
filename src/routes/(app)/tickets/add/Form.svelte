@@ -1,13 +1,20 @@
 <script>
+	import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
+	import { getDocs } from 'firebase/firestore';
+	import { query } from 'firebase/firestore';
 	import Button from './../../../../lib/components/Button.svelte';
-  import { Timestamp, addDoc, collection } from 'firebase/firestore';
+  import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
 	import InputField from './InputField.svelte';
   import { userAuth } from '../../../../store/authStore';
-  import { db } from '../../../../lib/firebase/firebase';
+  import { auth, db } from '../../../../lib/firebase/firebase';
   import TextArea from './TextArea.svelte';
-	export let active_step;
 
+
+  export let active_step;
+
+  let userData = $userAuth;
   let selectedCategory = '';
+  let uploading = false
 
 	let formData = {
     issue: ''.toLowerCase(),
@@ -15,73 +22,54 @@
     description: ''.toLowerCase(),
     status: 'Pending'.toLowerCase(),
     priority: 'Low'.toLowerCase(),
+    category: selectedCategory.toLowerCase(),
 	}
 
-  let userData = $userAuth;
-  const handle = () => {
-    console.log(userData)
-  }
+  
 
+  const newProp = async () => {
+    
+    if (uploading){
+      return 
+    };
 
-
-
-  const maintenanceCategories = [
-  { category: "Alarms and smoke detectors", src: "icons/Alarms and smoke detectors.svg" },
-  { category: "Bathroom and Toilet", src: "icons/Bathroom and Toilet.svg" },
-  { category: "Doors, Garages and Locks", src: "icons/Doors, Garages and Locks.svg" },
-  { category: "Electricity", src: "icons/Electricity.svg" },
-  { category: "Exterior and Garden", src: "icons/Exterior and Garden.svg" },
-  { category: "Fire", src: "icons/Fire.svg" },
-  { category: "Furniture", src: "icons/Furniture.svg" },
-  { category: "Heater and boiler", src: "icons/Heater and boiler.svg" },
-  { category: "Internal Floors", src: "icons/Internal Floors.svg" },
-  { category: "Internet", src: "icons/Internet.svg" },
-  { category: "Kitchen", src: "icons/Kitchen.svg" },
-  { category: "Laundry", src: "icons/Laundry.svg" },
-  { category: "Lighting", src: "icons/Lighting.svg" },
-  { category: "Pests", src: "icons/Pests.svg" },
-  { category: "Roof", src: "icons/Roof.svg" },
-  { category: "Stairs", src: "icons/Stairs.svg" },
-  { category: "Utility Meters", src: "icons/Utility Meters.svg" },
-  { category: "Water and Leaks", src: "icons/Water and Leaks.svg" },
-  { category: "Windows", src: "icons/Windoows.svg" },
-  { category: "Other", src: "icons/Other.svg" }
-];
-
-
-  const statusOptions = [
-    'pending',
-    'in progress',
-    'completed',
-    'canceled',
-  ];
-
-  const priorityOptions = [
-    'low',
-    'medium',
-    'high',
-  ];
-	
-
-  const newProp = async() => {
     const docData = {
       ...formData,
-      category: selectedCategory.toLowerCase(),
       createdAt: Timestamp.now(),
-      tenant_uid: userData.uid,
-      tenant_email: userData.email,
+      tenant_uid: auth.currentUser.uid,
+      tenant_email: auth.currentUser.email,
     };
-    
+
     console.log(docData);
 
-    await addDoc(collection(db, "tickets"), docData);
-    console.log("Document written");
-    history.back()
+    try {
+      uploading = true;
+      // Retrieve existing documents to determine the count
+      const userTicketsQuery = query(
+        collection(db, 'users', auth.currentUser.uid, 'tickets')
+      );
+      const userTicketsSnapshot = await getDocs(userTicketsQuery);
+      const queryNumber = userTicketsSnapshot.size + 1;
+
+      const userTicketsRef = doc(
+        db,
+        'users',
+        auth.currentUser.uid,
+        'tickets',
+        `Issue${queryNumber}`
+      );
+
+      await setDoc(userTicketsRef, docData);
+
+      console.log('Document written');
+      uploading = true;
+      history.back();
+    } catch (error) {
+      console.error('Error adding document:', error.message);
+    }
   };
 
-
 </script>
-
 <form class="form-container" on:submit={newProp}>
 	
   {#if active_step == 'Category'}
@@ -150,7 +138,7 @@
         <p><strong>Status:</strong>{formData.status}</p>
     </div>
       <div class="submit-btn">
-        <Button color='green' bg-color='' text='Submit Ticket' clickHandler={() => handle()} />
+        <Button color='green' bg-color='' text='Submit Ticket' clickHandler={()=>{}} />
       </div>
 		</div>
 

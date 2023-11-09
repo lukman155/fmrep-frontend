@@ -59,6 +59,7 @@
           {/each}
           {:catch error}
           <p>Something went wrong</p>
+          <p>{error}</p>
           {/await}
         </tbody>
   </table>

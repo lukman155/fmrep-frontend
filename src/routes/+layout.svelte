@@ -9,6 +9,8 @@
     unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
       isLoggedIn.update(() => true);
+      console.log('logged in')
+
       userAuth.set({
       uid: user.uid,
       displayName: user.displayName,
@@ -19,7 +21,7 @@
         isLoggedIn.update(() => false)
         console.log('logged out')
         document.cookie = `isLoggedIn=false; max-age=3600`;
-        userStore.set(null);
+        userAuth.set(null);
       }
     });
   }); 

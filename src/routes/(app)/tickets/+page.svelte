@@ -2,13 +2,17 @@
 	import Badge from './Badge.svelte';
 
   import { collection, getCountFromServer, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
-  import { db } from "../../../lib/firebase/firebase";
+  import { auth, db } from "../../../lib/firebase/firebase";
   import { onDestroy, onMount } from "svelte";
   import TicketDetails from "./TicketDetails.svelte";
   import Link from '../../../lib/components/Link.svelte';
+  import { userAuth } from '../../../store/authStore';
 
-  const collectionRef = collection(db, "tickets");
-  
+
+  let uid1 = $userAuth.uid;
+  console.log("User ID in tickets: ", uid1);
+  const collectionRef = collection(db, "users", uid1, 'tickets');
+
   const tickets = [];
   let data = []
   let showModal = false;
@@ -18,10 +22,11 @@
     selectedTicket = ticket;
     showModal = !showModal;
   }
+  
 
 let unsubscribe;
-
   onMount(()=> {
+    const uid = auth.currentUser.uid;
     const q = query(collectionRef, orderBy('createdAt', 'desc'), limit(10));
     unsubscribe = onSnapshot(q, (snapshot) => {
       const doc = snapshot.docs;
@@ -36,21 +41,14 @@ let unsubscribe;
     unsubscribe;
   })
 
-  const fetchTickets = async() => {
-    const querySnapshot = await getDocs(collection(db, "tickets"));
-    querySnapshot.forEach((doc) => {
-      tickets.push(doc.data())
-    });
-    return tickets
-  }
 
-  async function getCountByStatus(status) {
+  async function getCountByStatus(status, ref=collectionRef) {
     if (status) {
-      const q = query(collection(db, "tickets"), where("status", "==", status));
+      const q = query(ref, where("status", "==", status));
       let totalTickets = await getCountFromServer(q);
       return totalTickets.data().count;
     } else {
-      const q = query(collection(db, "tickets"));
+      const q = query(ref);
       let totalTickets = await getCountFromServer(q);
       return totalTickets.data().count;
     }

@@ -2,88 +2,101 @@
   import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
   import { goto } from '$app/navigation'
   import { userAuth } from "../store/authStore";
+  import { Timestamp, doc, setDoc } from "firebase/firestore";
+  import { db } from "../lib/firebase/firebase";
+
 
   let email = '';
   let password = '';
   let confirmPass = '';
-  let error = false;
+  let errorState = false;
   let errorMsg;
   let register = false;
   let authenticating = false;
   let isAdmin;
-
+  
   const auth = getAuth();
 
   async function handleAuthenticate(){
-    error = false
+
     if (authenticating){
       return;
     }
 
     if(!email || !password || (register && !confirmPass)) {
       errorMsg = 'The information you have entered is incorrect'
-      error = true;
+      errorState = true;
       return;
     }
 
     if (register && password !== confirmPass){
       errorMsg = 'Passwords do not match';
-      error = true;
+      errorState = true;
       return;
     }
 
-    authenticating = true;
 
     try {
+    authenticating = true;
       if (!register) {
-        signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            $userAuth = userCredential.user;
-            document.cookie = `isLoggedIn=true; max-age=3600`;
-            goto('/dashboard')
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-          });
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        $userAuth = userCredential.user;
+        document.cookie = `isLoggedIn=true; max-age=3600`;
+        goto('/dashboard');
       } else {
-      // Create an admin account if the user has selected the checkbox.
-      if (isAdmin) {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            const user = userCredential.user;
-            user.customClaims = { admin: true };
-            $userAuth = user;
-            document.cookie = `isLoggedIn=true; max-age=3600`;
-            goto('/dashboard');
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+        if (isAdmin) {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          await setDoc(doc(db, "admins", user.uid), {
+            createdAt: Timestamp.now(),
+            level: 5,
+            admin: true
           });
-      } else {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-            $userAuth = userCredential.user
-            document.cookie = `isLoggedIn=true; max-age=3600`;
-            goto('/dashboard')
-          })
-          .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-          });
+          $userAuth = user;
+          document.cookie = `isLoggedIn=true; max-age=3600`;
+          goto('/dashboard');
+        } else {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          $userAuth = userCredential.user;
+          document.cookie = `isLoggedIn=true; max-age=3600`;
+          goto('/dashboard');
+        }
       }
+      authenticating = false;
+    } catch (error) {
+      errorState = true;
+      handleAuthError(error);
     }
-  } catch (err) {
-    console.log('There was an auth error', err);
-    error = true;
-    errorMsg = err;
-    authenticating = false;
   }
-}
+
+  function handleAuthError(error) {
+      
+      const errorCode = error.code;
+      console.log(errorCode)
+
+      switch (errorCode) {
+        case 'auth/email-already-in-use':
+          errorMsg = 'Email is already in use.';
+          break;
+        case 'auth/weak-password':
+          errorMsg = 'Password is too weak.';
+          break;
+        case 'auth/invalid-login-credentials':
+          errorMsg = 'Wrong Password.';
+          break;
+        case 'auth/invalid-email':
+          errorMsg = 'Please enter a Valid Email Address.';
+          break;
+        // Add more cases as needed
+        default:
+          errorMsg = 'deaf';
+      }
+      console.log(errorMsg)
+
+      
+      authenticating = false;
+      
+    }
 
 
   const handleRegister = () => {
@@ -94,12 +107,13 @@
 </script>
 
 <section class="authContainer">
+  <h1>{register? 'Register' : 'Login'}</h1>
+  
   <form>
-    <h1>{register? 'Register' : 'Login'}</h1>
-    
-    {#if error}
-    <p class="error">{errorMsg}</p>
-    {/if}
+  
+    {#if errorState}
+      <p class='error'>{errorMsg}</p> 
+    {/if}    
 
     <label>
       <p class={email?'above':'center'}>Email</p>
@@ -125,7 +139,7 @@
     {/if}
     
     <button on:submit={handleAuthenticate} on:click={handleAuthenticate} class="submit-btn">
-      {#if error}
+      {#if errorState}
       Try Again
       {:else if authenticating}
         <i class="fa-solid fa-spinner spin"></i>
@@ -301,6 +315,7 @@
     display: flex;
     flex-direction: column;
     gap: 1em;
+    position: relative;
   }
 
   form label {

@@ -2,7 +2,7 @@
 	import Button from './../../../../lib/components/Button.svelte';
 	import Link from './../../../../lib/components/Link.svelte';
 	import { userAuth, x } from './../../../../store/authStore.js';
-  import { addDoc, collection, doc, serverTimestamp, setDoc, Timestamp } from "firebase/firestore";
+  import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
   import { db } from "../../../../lib/firebase/firebase";
 	import ProgressBar from './ProgressBar.svelte';
   import Form from './Form.svelte';
@@ -16,35 +16,6 @@
 		progressBar.handleProgress(stepIncrement)
 	}
 
-
-
-  let loading = false;
-  let error = false;
-  let userData = $userAuth;
-
-  const statusOptions = [
-    'Pending',
-    'In Progress',
-    'Completed',
-    'Canceled',
-  ];
-
-
-  const newProp = async() => {
-    const docData = {
-      ticket_name,
-      address,
-      category,
-      priority,
-      createdAt: Timestamp.now(),
-      tenant_uid:userData.uid,
-      status:selectedStatus.toLowerCase(),
-    };
-    
-    await addDoc(collection(db, "tickets"), docData);
-    console.log("Document written");
-    history.back()
-  };
 
 </script>
 
