@@ -1,23 +1,20 @@
 <script>
-  import { collection, getCountFromServer, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
+  import { collection, collectionGroup, doc, getCountFromServer, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
   import { auth, db } from "../../../lib/firebase/firebase";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import TicketDetails from "./TicketDetails.svelte";
   import Link from '../../../lib/components/Link.svelte';
-  import { userAuth } from '../../../store/authStore';
   import Badge from "./Badge.svelte";
 
   // Initialize isAdmin as false
   let isAdmin = false;
-  let userTicketsCollectionRef;
+  let userTicketsRef;
   let uid;
 
   // Function to check admin status
   const checkAdminStatus = async () => {
     try {
-      const adminsCollectionRef = collection(db, 'admins');
-      const adminsSnapshot = await getDocs(adminsCollectionRef);
-      
+      const adminsSnapshot = await getDocs(collection(db, 'admins'));
       // Check if the current user's UID exists in the admins collection
       isAdmin = adminsSnapshot.docs.some(doc => doc.id === auth.currentUser.uid);
     } catch (error) {
@@ -25,13 +22,9 @@
     }
   };
 
-  // Get the user's UID from the store
-
-
-  // Collection reference for user's tickets
-
   // Array to store ticket data
-  let data = [];
+  let ticket_data = [];
+  let ticket_users = [];
 
   // State for displaying ticket details modal
   let showModal = false;
@@ -45,65 +38,51 @@
     showModal = !showModal;
   }
 
-  // Function to get real-time updates for all tickets
-  const subscribeToAllTickets = () => {
-    const ticketsCollectionRef = collection(db, 'users');
+const getUserTicket = async(ref) => {
+  try {
+    const querySnapshot = await getDocs(query(ref, orderBy('createdAt', 'desc')));
+    ticket_data = querySnapshot.docs.map((doc) => doc.data());
+  } catch (error) {
+    console.error("Error fetching User Ticket Data:", error);
+  }
+}
 
-    const unsubscribe = onSnapshot(ticketsCollectionRef, (snapshot) => {
-      // Reset data and update with new ticket data
-      data = snapshot.docs.map((doc) => doc.data());
+  // Function to get real-time updates for all tickets
+  const getAllTickets = async () => {
+    
+    const usersCollectionRef = collection(db, 'ticket_user');
+    const usersSnapshot = await getDocs(usersCollectionRef);
+    usersSnapshot.forEach((doc) => {
+      // Access the data of each user document
+      ticket_users.push(doc.id)
     });
 
-    // Return the unsubscribe function to stop listening when needed
-    return unsubscribe;
-  };
-
-  // Subscription variable for onSnapshot
-  let unsubscribe;
+    ticket_users.forEach((user) => {
+      const ticketsCollectionRef = collection(db, 'users', user, 'tickets');
+      const query = onSnapshot(ticketsCollectionRef, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // Add a new document with data to our array
+          ticket_data = [...ticket_data, doc.data()];
+        })
+      });
+    })
+};
 
   onMount(async () => {
     // Check admin status
     await checkAdminStatus();
     if (auth.currentUser) {
       uid = auth.currentUser.uid;
-      console.log("User ID: ", uid);
-
-      // Create user-specific tickets collection reference
-      userTicketsCollectionRef = collection(db, 'users', uid, 'tickets');
+      userTicketsRef = collection(db, 'users', uid, 'tickets');
     }
 
-    // Subscribe to all tickets if the user is an admin
     if (isAdmin) {
-      unsubscribe = subscribeToAllTickets();
+      getAllTickets();
     } else {
-      // Query user's tickets and update data
-      const q = query(userTicketsCollectionRef, orderBy('createdAt', 'desc'));
-      unsubscribe = onSnapshot(q, (snapshot) => {
-        data = snapshot.docs.map((doc) => doc.data());
-      });
+      getUserTicket(userTicketsRef)
     }
   });
 
-  onDestroy(() => {
-    // Unsubscribe when the component is destroyed
-    
-  });
-
-  // Function to get the count of tickets based on status
-  async function getCountByStatus(status, ref = userTicketsCollectionRef) {
-    const q = status ? query(ref, where("status", "==", status)) : query(ref);
-    const totalTickets = await getCountFromServer(q);
-    return totalTickets.data().count;
-  }
-
-  // Array of metrics with their corresponding labels, queries, and state classes
-  let metrics = [
-    { label: "Tickets", query: async () => getCountByStatus(), stateClass: "" },
-    { label: "Pending", query: async () => getCountByStatus("pending"), stateClass: "pending" },
-    { label: "In Progress", query: async () => getCountByStatus("in progress"), stateClass: "in" },
-    { label: "Completed", query: async () => getCountByStatus("completed"), stateClass: "completed" },
-    { label: "Canceled", query: async () => getCountByStatus("canceled"), stateClass: "canceled" },
-  ];
 </script>
 
 
@@ -120,13 +99,7 @@
 
   <div class="status-badges">
     {#if uid}
-      {#each metrics as { label, query }}
-        {#await query()}
-          <Badge label={label} loading={true}  />
-          {:then num}
-          <Badge label={label} num={num}  />
-        {/await}
-      {/each}
+    <Badge />
     {/if}
   </div>
   
@@ -141,8 +114,8 @@
           </tr>
       </thead>
       <tbody>
-        {#each data as ticket}
-          <tr class="{ticket.status}" on:click={() => showTicketDetails(ticket)}>
+        {#each ticket_data as ticket, index}
+          <tr class="{ticket.status}" on:click={() => showTicketDetails(ticket)} key={index}>
             <td class="t-text">
               <i class="fa-regular fa-file-lines"></i>
               <p class="ticket-text">{ticket.issue}<br>

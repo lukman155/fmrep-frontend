@@ -28,46 +28,58 @@
   
 
   const newProp = async () => {
-    
-    if (uploading){
-      return 
-    };
+  if (uploading) {
+    return;
+  }
 
-    const docData = {
-      ...formData,
-      createdAt: Timestamp.now(),
-      tenant_uid: auth.currentUser.uid,
-      tenant_email: auth.currentUser.email,
-    };
-
-    console.log(docData);
-
-    try {
-      uploading = true;
-      // Retrieve existing documents to determine the count
-      const userTicketsQuery = query(
-        collection(db, 'users', auth.currentUser.uid, 'tickets')
-      );
-      const userTicketsSnapshot = await getDocs(userTicketsQuery);
-      const queryNumber = userTicketsSnapshot.size + 1;
-
-      const userTicketsRef = doc(
-        db,
-        'users',
-        auth.currentUser.uid,
-        'tickets',
-        `Issue${queryNumber}`
-      );
-
-      await setDoc(userTicketsRef, docData);
-
-      console.log('Document written');
-      uploading = true;
-      history.back();
-    } catch (error) {
-      console.error('Error adding document:', error.message);
-    }
+  const docData = {
+    ...formData,
+    createdAt: Timestamp.now(),
+    tenant_uid: auth.currentUser.uid,
+    tenant_email: auth.currentUser.email,
   };
+
+  console.log(docData);
+
+  try {
+    uploading = true;
+
+    // Retrieve existing documents to determine the count
+    const userTicketCount = query(
+      collection(db, 'users', auth.currentUser.uid, 'tickets')
+    );
+    const userTicketsSnapshot = await getDocs(userTicketCount);
+    const queryNumber = userTicketsSnapshot.size + 1;
+
+    const userTicketsRef = doc(
+      db,
+      'users',
+      auth.currentUser.uid,
+      'tickets',
+      `Issue${queryNumber}`
+    );
+
+    await setDoc(userTicketsRef, docData);
+
+    // Add UID to ticket_user collection
+    const ticketUserRef = doc(
+      db,
+      'ticket_user',
+      auth.currentUser.uid,
+    );
+
+    await setDoc(ticketUserRef, {
+      uid: auth.currentUser.uid,
+    });
+
+    console.log('Document written');
+    uploading = false;
+    history.back();
+  } catch (error) {
+    console.error('Error adding document:', error.message);
+  }
+};
+
 
 </script>
 <form class="form-container" on:submit={newProp}>

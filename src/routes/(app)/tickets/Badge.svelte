@@ -1,24 +1,49 @@
-<!-- Badge.svelte -->
 <script>
-  export let label;
-  export let num;
-  export let loading;
-  let stateClass = label.toLowerCase();
+  import { collection, getCountFromServer, query, where } from "firebase/firestore";
+  import { auth, db } from "../../../lib/firebase/firebase";
+
+  let uid = auth.currentUser.uid
+
+  const ticketRef = collection(db, 'users', uid, 'tickets' )
+
+  // Function to get the count of tickets based on status
+  async function getCountByStatus(status, ref = ticketRef) {
+    const q = status ? query(ref, where("status", "==", status)) : query(ref);
+    const totalTickets = await getCountFromServer(q);
+    return totalTickets.data().count;
+  }
+
+  // Array of metrics with their corresponding labels, queries, and state classes
+  let metrics = [
+    { label: "Tickets", query: async () => getCountByStatus(), stateClass: "" },
+    { label: "Pending", query: async () => getCountByStatus("pending"), stateClass: "pending" },
+    { label: "In Progress", query: async () => getCountByStatus("in progress"), stateClass: "in" },
+    { label: "Completed", query: async () => getCountByStatus("completed"), stateClass: "completed" },
+    { label: "Canceled", query: async () => getCountByStatus("canceled"), stateClass: "canceled" },
+  ];
 </script>
 
-  <span class="badge {stateClass}">
-    {#if loading}
-      Loading
-    {:else}
-      {label}
-      {#if num != 'pine'}
-      : {num}
-      {/if}
-    {/if}
-  </span>
+
+
+  {#each metrics as { label, query, stateClass }}
+    {#await query()}
+      <span class="badge {stateClass}">
+        {label}
+        </span>
+          {:then num}
+      <span class="badge {stateClass}">
+        {label}
+            {#if num != 'pine'}
+              : {num}
+            {/if}
+      </span>
+    {/await}
+  {/each}
+
+
 
 <style>
-    .badge {
+  .badge {
     width: fit-content;
     border-radius: 10px;
     padding: .4em .8em;
@@ -26,21 +51,19 @@
     font-size: .7em;
   }
 
-.pending {
-  background-color: rgba(49, 49, 49, 0.15) !important;
-}
+  .pending {
+    background-color: rgba(49, 49, 49, 0.15) !important;
+  }
 
-.in {
-  background-color: rgba(255, 221, 0, 0.15) !important;
-}
+  .in {
+    background-color: rgba(255, 221, 0, 0.15) !important;
+  }
 
-.completed {
-  background-color: rgba(0, 253, 0, 0.15) !important;
-}
+  .completed {
+    background-color: rgba(0, 253, 0, 0.15) !important;
+  }
 
-.canceled {
-  background-color: rgba(255, 0, 0, 0.1) !important;
-}
-
-
+  .canceled {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+  }
 </style>
