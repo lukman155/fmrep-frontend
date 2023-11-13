@@ -150,25 +150,25 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
       </thead>
       <tbody>
         {#each ticket_data as ticket, index}
-          <tr class="{ticket.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
-            <td class="t-text">
-              <i class="fa-regular fa-file-lines"></i>
-              <p class="ticket-text">
-                {#if ticket.issue}
-                  {ticket.issue}
-                {:else}
-                  No Issue
-                {/if}
-                <br>
-                <span class="submit-badge">Submitted by {ticket.tenant_email}</span>
-              </p>
-            </td>
-            <td>{ticket.address || 'No Address'}</td>
-            <td>{ticket.category || 'No Category'}</td>
-            <td>{ticket.priority || 'No Priority'}</td>
-            <td>{ticket.status || 'No Status'}</td>
-          </tr>
-        {/each}
+  <tr class="{ticket.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
+    <td class="t-text">
+      <i class="fa-regular fa-file-lines"></i>
+      <p class="ticket-text">
+        {#if ticket.issue}
+          <span class="truncated">{ticket.issue}</span>
+        {:else}
+          No Issue
+        {/if}
+        <br>
+        <span class="submit-badge">Submitted by {ticket.tenant_email}</span>
+      </p>
+    </td>
+    <td class="truncated">{ticket.address || 'No Address'}</td>
+    <td class="truncated">{ticket.category || 'No Category'}</td>
+    <td class="truncated">{ticket.priority || 'No Priority'}</td>
+    <td class="truncated">{ticket.status || 'No Status'}</td>
+  </tr>
+{/each}
       </tbody>
 
   </table>
@@ -184,6 +184,13 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
 
 
 <style>
+
+.truncated {
+    max-width: 100px; /* Adjust the maximum width as needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   tr {
     cursor: pointer;
