@@ -1,17 +1,18 @@
 <script>
-	import { checkAdminStatus } from './../../../lib/helper.js';
-  import { collection, getDocs, orderBy, query, where, limit, startAfter,  } from "firebase/firestore";
-  import { auth, db } from "../../../lib/firebase/firebase";
-  import { onMount } from "svelte";
-  import TicketDetails from "./TicketDetails.svelte";
+	import { collection, getDocs, orderBy, query, where, limit, startAfter, } from 'firebase/firestore';
+  import { checkAdminStatus  } from './../../../lib/helper.js';
+  import { auth, db } from '../../../lib/firebase/firebase';
+  import { onMount } from 'svelte';
+  import TicketDetails from './TicketDetails.svelte';
   import Link from '../../../lib/components/Link.svelte';
-  import Badge from "./Badge.svelte";
+  import Badge from './Badge.svelte';
 
   let uid;
   let isAdmin = false;
   let currentPage = 1;
   const ticketsPerPage = 10;
   let ticket_data = [];
+  let startAfterDoc;
 
   // State for displaying ticket details modal
   let showModal = false;
@@ -26,102 +27,76 @@
     showModal = true
   }
 
-  const loadNextPage = async () => {
-    const startAfterDoc = ticket_data[ticket_data.length - 1]?.id;
-    const newData = await (isAdmin ? getAllTickets : getUserTickets)(startAfterDoc, ticketsPerPage);
-    ticket_data = newData;
-    currentPage++;
+  const loadPage = async (direction) => {
+    const newData = await (isAdmin ? getAllTickets : getUserTickets)(
+      startAfterDoc,
+      ticketsPerPage,
+      direction
+    );
+    ticket_data = newData.tickets;
+    startAfterDoc = direction === -1 ? newData.startAfterDoc : null;
+    console.log(ticket_data)
+    currentPage += direction;
   };
 
-  const loadPreviousPage = async () => {
-    if (currentPage > 1) {
-      const lastDocInPage = ticket_data[ticket_data.length - 1]?.id;
-      const newData = await (isAdmin ? getAllTickets : getUserTickets)(lastDocInPage, ticketsPerPage);
-      ticket_data = newData;
-      currentPage--;
+  const getTickets = async (collectionRef, startAfterDoc, ticketsPerPage, additionalConditions = []) => {
+    try {
+      let queryRef = query(
+        collectionRef,
+        ...additionalConditions,
+        orderBy('createdAt', 'desc'),
+        limit(ticketsPerPage),
+      );
+
+      if (startAfterDoc) {
+        queryRef = query(
+        collectionRef,
+        ...additionalConditions,
+        orderBy('createdAt', 'desc'),
+        limit(ticketsPerPage),
+        startAfter(startAfterDoc));
+      }
+
+      const querySnapshot = await getDocs(queryRef);
+
+      let tickets = [];
+      querySnapshot.forEach((doc) => {
+        tickets.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+        startAfterDoc = doc;
+        
+      });
+      tickets = tickets
+      return { tickets, startAfterDoc }
+    } catch (error) {
+      console.error('Error retrieving tickets:', error.message);
+      return [];
     }
   };
 
-  const getUserTickets = async (startAfterDoc, ticketsPerPage) => {
-  try {
+  const getUserTickets = async (startAfterDoc, ticketsPerPage, direction) => {
     const userTicketsRef = collection(db, 'tickets');
-    let queryRef = query(
-      userTicketsRef,
-      where('tenant_uid', '==', auth.currentUser.uid),
-      orderBy('createdAt', 'desc'),
-      limit(ticketsPerPage),
-    );
+    const additionalConditions = [where('tenant_uid', '==', auth.currentUser.uid)];
+    return getTickets(userTicketsRef, startAfterDoc, ticketsPerPage, additionalConditions);
+  };
 
-    if (startAfterDoc) {
-      queryRef = startAfter(queryRef, startAfterDoc);
-    }
-
-    const querySnapshot = await getDocs(queryRef);
-
-    const userTickets = [];
-    querySnapshot.forEach((doc) => {
-      userTickets.push({
-        id: doc.id,
-        data: doc.data(),
-      });
-    });
-
-    return userTickets;
-  } catch (error) {
-    console.error('Error retrieving user tickets:', error.message);
-    return [];
-  }
-};
-
-const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
-  try {
+  const getAllTickets = async (startAfterDoc, ticketsPerPage, direction) => {
     const allTicketsRef = collection(db, 'tickets');
-    let queryRef = query(
-      allTicketsRef,
-      orderBy('createdAt', 'desc'),
-      limit(ticketsPerPage),
-    );
-
-    if (startAfterDoc) {
-      queryRef = startAfter(queryRef, startAfterDoc);
-    }
-
-    const querySnapshot = await getDocs(queryRef);
-
-    let allTickets = [];
-    querySnapshot.forEach((doc) => {
-      allTickets.push({
-        id: doc.id,
-        data: doc.data(),
-      });
-    });
-
-    return allTickets;
-  } catch (error) {
-    console.error('Error retrieving all tickets:', error.message);
-    return [];
-  }
-};
-
-
+    return getTickets(allTicketsRef, startAfterDoc, ticketsPerPage);
+  };
 
   onMount(async () => {
-   // Check admin status
-  
-  isAdmin = await checkAdminStatus();
-  uid = auth.currentUser.uid;
+    // Check admin status
+    isAdmin = await checkAdminStatus();
+    uid = auth.currentUser.uid;
 
-
-
-    if (isAdmin) {
-      ticket_data = await getAllTickets(null, ticketsPerPage);
-    } else {
-      ticket_data = await getUserTickets(null, ticketsPerPage);
-    }
-
-    
-    });
-
+    const data = await (isAdmin ? getAllTickets : getUserTickets)(null, ticketsPerPage);
+    ticket_data = data.tickets
+    startAfterDoc = data.startAfterDoc
+    console.log(startAfterDoc)
+  });
 </script>
 
 
@@ -155,14 +130,14 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
   <tr class="{ticket.data.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
     <td class="t-text">
       <i class="fa-regular fa-file-lines"></i>
-      <p class="ticket-text">
+      <p class="ticket-text truncated">
         {#if ticket.data.issue}
-          <span class="truncated">{ticket.data.issue}</span>
+          {ticket.data.issue}
         {:else}
           No Issue
         {/if}
         <br>
-        <span class="submit-badge">Submitted by {ticket.data.tenant_email}</span>
+        <span class="submit-badge truncated">Submitted by {ticket.data.tenant_email}</span>
       </p>
     </td>
     <td class="truncated">{ticket.data.address || 'No Address'}</td>
@@ -175,20 +150,19 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
 
   </table>
 
-{#if uid}
   <div class="pagination">
-    <button on:click={loadPreviousPage} disabled={currentPage === 1}>Previous Page</button>
+    <button on:click={() => loadPage(-1)} disabled={currentPage === 1}>Previous Page</button>
     <span>Page {currentPage}</span>
-    <button on:click={loadNextPage}>Next Page</button>
+    <button on:click={() => loadPage(1)}>Next Page</button>
   </div>
-{/if}
+
 </section>
 
 
 <style>
 
 .truncated {
-    max-width: 100px; /* Adjust the maximum width as needed */
+    max-width: 200px; /* Adjust the maximum width as needed */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
