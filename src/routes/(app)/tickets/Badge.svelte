@@ -8,18 +8,25 @@
   let isAdmin = false;
   isAdmin = checkAdminStatus;
 
-  let ticketRef = collection(db, 'users', uid, 'tickets' )
-  if(isAdmin){
-    ticketRef = collection(db, 'users');
+  let ticketRef = collection(db, 'tickets' )
+
+// Function to get the count of tickets based on status
+async function getCountByStatus(status, ref = ticketRef) {
+  const isAdmin = await checkAdminStatus(); // Assuming you have a function to check admin status
+  let q;
+
+  if (isAdmin) {
+    // Admin can get count for all tickets
+    q = status ? query(ref, where("status", "==", status)) : query(ref);
+  } else {
+    // Regular user gets count for their own tickets
+    const currentUser = auth.currentUser;
+    q = query(ref, where("tenant_uid", "==", currentUser.uid), where("status", "==", status));
   }
 
-  // Function to get the count of tickets based on status
-  async function getCountByStatus(status, ref = ticketRef) {
-    const q = status ? query(ref, where("status", "==", status)) : query(ref);
-    const totalTickets = await getCountFromServer(q);
-    return totalTickets.data().count;
-  }
-
+  const totalTickets = await getCountFromServer(q);
+  return totalTickets.data().count;
+}
   // Array of metrics with their corresponding labels, queries, and state classes
   let metrics = [
     { label: "Tickets", query: async () => getCountByStatus(), stateClass: "" },
