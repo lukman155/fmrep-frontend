@@ -1,10 +1,17 @@
 <script>
   import { collection, getCountFromServer, query, where } from "firebase/firestore";
   import { auth, db } from "../../../lib/firebase/firebase";
+  import { checkAdminStatus } from "../../../lib/helper";
 
   let uid = auth.currentUser.uid
 
-  const ticketRef = collection(db, 'users', uid, 'tickets' )
+  let isAdmin = false;
+  isAdmin = checkAdminStatus;
+
+  let ticketRef = collection(db, 'users', uid, 'tickets' )
+  if(isAdmin){
+    ticketRef = collection(db, 'users');
+  }
 
   // Function to get the count of tickets based on status
   async function getCountByStatus(status, ref = ticketRef) {
@@ -24,21 +31,20 @@
 </script>
 
 
-
-  {#each metrics as { label, query, stateClass }}
-    {#await query()}
-      <span class="badge {stateClass}">
-        {label}
-        </span>
-          {:then num}
-      <span class="badge {stateClass}">
-        {label}
-            {#if num != 'pine'}
-              : {num}
-            {/if}
-      </span>
-    {/await}
-  {/each}
+{#each metrics as { label, query, stateClass }}
+  {#await query()}
+    <span class="badge {stateClass}">
+      {label}
+    </span>
+      {:then num}
+    <span class="badge {stateClass}">
+      {label}
+        {#if num != 'pine'}
+          : {num}
+        {/if}
+    </span>
+  {/await}
+{/each}
 
 
 

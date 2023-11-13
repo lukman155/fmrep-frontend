@@ -3,6 +3,7 @@
   import { collection, getDocs } from "firebase/firestore";
   import { onMount } from "svelte";
   import { db } from "../../../lib/firebase/firebase";
+  import Link from "../../../lib/components/Link.svelte";
 
 
   const properties = [];
@@ -24,9 +25,10 @@
   <div class="title">
     <h1>Properties</h1>
     <p>Manage all your Properties</p>
+  <Link to='/properties/add' text='Add Property'/>
+
   </div>
 
-  <h2>Properties</h2>
   <p class="badge">12 Properties Listed</p>
 
   
@@ -63,9 +65,6 @@
           {/await}
         </tbody>
   </table>
-
-  <a href="/properties/add">Add Property</a>
-  <a href="/properties/edit">Edit Property</a>
 
 </section>
 

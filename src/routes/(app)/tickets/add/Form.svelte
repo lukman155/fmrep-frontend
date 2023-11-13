@@ -44,42 +44,19 @@
   try {
     uploading = true;
 
-    // Retrieve existing documents to determine the count
-    const userTicketCount = query(
-      collection(db, 'users', auth.currentUser.uid, 'tickets')
-    );
-    const userTicketsSnapshot = await getDocs(userTicketCount);
-    const queryNumber = userTicketsSnapshot.size + 1;
+    // Reference to the 'tickets' collection with automatic document ID generation
+    const ticketsRef = collection(db, 'tickets');
 
-    const userTicketsRef = doc(
-      db,
-      'users',
-      auth.currentUser.uid,
-      'tickets',
-      `Issue${queryNumber}`
-    );
+    // Use addDoc for automatic document ID generation
+    const newTicketRef = await addDoc(ticketsRef, docData);
 
-    await setDoc(userTicketsRef, docData);
-
-    // Add UID to ticket_user collection
-    const ticketUserRef = doc(
-      db,
-      'ticket_user',
-      auth.currentUser.uid,
-    );
-
-    await setDoc(ticketUserRef, {
-      uid: auth.currentUser.uid,
-    });
-
-    console.log('Document written');
+    console.log('Document written with ID:', newTicketRef.id);
     uploading = false;
     history.back();
   } catch (error) {
     console.error('Error adding document:', error.message);
   }
 };
-
 
 </script>
 <form class="form-container" on:submit={newProp}>

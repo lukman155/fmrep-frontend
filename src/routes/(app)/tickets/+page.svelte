@@ -1,30 +1,17 @@
 <script>
-  import { collection, collectionGroup, doc, getCountFromServer, getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
+	import { checkAdminStatus } from './../../../lib/helper.js';
+  import { collection, getDocs, orderBy, query, where, limit, startAfter,  } from "firebase/firestore";
   import { auth, db } from "../../../lib/firebase/firebase";
   import { onMount } from "svelte";
   import TicketDetails from "./TicketDetails.svelte";
   import Link from '../../../lib/components/Link.svelte';
   import Badge from "./Badge.svelte";
 
-  // Initialize isAdmin as false
-  let isAdmin = false;
-  let userTicketsRef;
   let uid;
-
-  // Function to check admin status
-  const checkAdminStatus = async () => {
-    try {
-      const adminsSnapshot = await getDocs(collection(db, 'admins'));
-      // Check if the current user's UID exists in the admins collection
-      isAdmin = adminsSnapshot.docs.some(doc => doc.id === auth.currentUser.uid);
-    } catch (error) {
-      console.error('Error checking admin status:', error.message);
-    }
-  };
-
-  // Array to store ticket data
+  let isAdmin = false;
+  let currentPage = 1;
+  const ticketsPerPage = 10;
   let ticket_data = [];
-  let ticket_users = [];
 
   // State for displaying ticket details modal
   let showModal = false;
@@ -36,55 +23,104 @@
   function showTicketDetails(ticket) {
     selectedTicket = ticket;
     showModal = !showModal;
+    showModal = true
   }
 
-const getUserTicket = async(ref) => {
+  const loadNextPage = async () => {
+    const startAfterDoc = ticket_data[ticket_data.length - 1]?.id;
+    const newData = await (isAdmin ? getAllTickets : getUserTickets)(startAfterDoc, ticketsPerPage);
+    ticket_data = newData;
+    currentPage++;
+  };
+
+  const loadPreviousPage = async () => {
+    if (currentPage > 1) {
+      const lastDocInPage = ticket_data[ticket_data.length - 1]?.id;
+      const newData = await (isAdmin ? getAllTickets : getUserTickets)(lastDocInPage, ticketsPerPage);
+      ticket_data = newData;
+      currentPage--;
+    }
+  };
+
+  const getUserTickets = async (startAfterDoc, ticketsPerPage) => {
   try {
-    const querySnapshot = await getDocs(query(ref, orderBy('createdAt', 'desc')));
-    ticket_data = querySnapshot.docs.map((doc) => doc.data());
-  } catch (error) {
-    console.error("Error fetching User Ticket Data:", error);
-  }
-}
+    const userTicketsRef = collection(db, 'tickets');
+    let queryRef = query(
+      userTicketsRef,
+      where('tenant_uid', '==', auth.currentUser.uid),
+      orderBy('createdAt', 'desc'),
+      limit(ticketsPerPage),
+    );
 
-  // Function to get real-time updates for all tickets
-  const getAllTickets = async () => {
-    
-    const usersCollectionRef = collection(db, 'ticket_user');
-    const usersSnapshot = await getDocs(usersCollectionRef);
-    usersSnapshot.forEach((doc) => {
-      // Access the data of each user document
-      ticket_users.push(doc.id)
+    if (startAfterDoc) {
+      queryRef = startAfter(queryRef, startAfterDoc);
+    }
+
+    const querySnapshot = await getDocs(queryRef);
+
+    const userTickets = [];
+    querySnapshot.forEach((doc) => {
+      userTickets.push(doc.data());
     });
 
-    ticket_users.forEach((user) => {
-      const ticketsCollectionRef = collection(db, 'users', user, 'tickets');
-      const query = onSnapshot(ticketsCollectionRef, (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // Add a new document with data to our array
-          ticket_data = [...ticket_data, doc.data()];
-        })
-      });
-    })
+    return userTickets;
+  } catch (error) {
+    console.error('Error retrieving user tickets:', error.message);
+    return [];
+  }
 };
 
-  onMount(async () => {
-    // Check admin status
-    await checkAdminStatus();
-    if (auth.currentUser) {
-      uid = auth.currentUser.uid;
-      userTicketsRef = collection(db, 'users', uid, 'tickets');
+
+const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
+  try {
+    const allTicketsRef = collection(db, 'tickets');
+    let queryRef = query(
+      allTicketsRef,
+      orderBy('createdAt', 'desc'),
+      limit(ticketsPerPage),
+    );
+
+    if (startAfterDoc) {
+      queryRef = startAfter(queryRef, startAfterDoc);
     }
+
+    const querySnapshot = await getDocs(queryRef);
+
+    let allTickets = [];
+    querySnapshot.forEach((doc) => {
+      allTickets.push(doc.data());
+      allTickets = allTickets
+    console.log(allTickets)
+    });
+
+    return allTickets;
+  } catch (error) {
+    console.error('Error retrieving all tickets:', error.message);
+    return [];
+  }
+};
+
+
+
+
+  onMount(async () => {
+   // Check admin status
+  
+  isAdmin = await checkAdminStatus();
+  uid = auth.currentUser.uid;
+
+
 
     if (isAdmin) {
-      getAllTickets();
+      ticket_data = await getAllTickets(null, ticketsPerPage);
     } else {
-      getUserTicket(userTicketsRef)
+      ticket_data = await getUserTickets(null, ticketsPerPage);
     }
-  });
+
+    
+    });
 
 </script>
-
 
 
 <section>
@@ -97,12 +133,11 @@ const getUserTicket = async(ref) => {
 
   <h2>Maintenance Tickets</h2>
 
+  {#if uid}
   <div class="status-badges">
-    {#if uid}
     <Badge />
-    {/if}
   </div>
-  
+  {/if}
   <table>
       <thead>
           <tr>
@@ -115,24 +150,36 @@ const getUserTicket = async(ref) => {
       </thead>
       <tbody>
         {#each ticket_data as ticket, index}
-          <tr class="{ticket.status}" on:click={() => showTicketDetails(ticket)} key={index}>
+          <tr class="{ticket.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
             <td class="t-text">
               <i class="fa-regular fa-file-lines"></i>
-              <p class="ticket-text">{ticket.issue}<br>
-              <span class="submit-badge">Submitted by {ticket.tenant_email}</span></p>
+              <p class="ticket-text">
+                {#if ticket.issue}
+                  {ticket.issue}
+                {:else}
+                  No Issue
+                {/if}
+                <br>
+                <span class="submit-badge">Submitted by {ticket.tenant_email}</span>
+              </p>
             </td>
-            <td>{ticket.address}</td>
-            <td>{ticket.category}</td>
-            <td>{ticket.priority}</td>
-            <td>{ticket.status}</td>
+            <td>{ticket.address || 'No Address'}</td>
+            <td>{ticket.category || 'No Category'}</td>
+            <td>{ticket.priority || 'No Priority'}</td>
+            <td>{ticket.status || 'No Status'}</td>
           </tr>
         {/each}
       </tbody>
 
   </table>
 
-
-
+{#if uid}
+  <div class="pagination">
+    <button on:click={loadPreviousPage} disabled={currentPage === 1}>Previous Page</button>
+    <span>Page {currentPage}</span>
+    <button on:click={loadNextPage}>Next Page</button>
+  </div>
+{/if}
 </section>
 
 
@@ -142,7 +189,7 @@ const getUserTicket = async(ref) => {
     cursor: pointer;
   }
 
-  tr:hover {
+  .ticket-hover:hover {
     transform: scale(1.005);
   }
 

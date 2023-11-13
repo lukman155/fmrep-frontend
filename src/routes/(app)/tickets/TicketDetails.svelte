@@ -1,6 +1,5 @@
 <!-- TicketDetails.svelte -->
 <script>
-  import Badge from './Badge.svelte';
 
   export let ticket;
   export let show;
@@ -8,10 +7,16 @@
   function close() {
     show = false;
   }
+
+  function overlayClick(event) {
+    if (event.target.classList.contains('modal-container')) {
+      close();
+    }
+  }
 </script>
 
 {#if show}
-<div class="modal-container">
+<div class="modal-container" on:click={overlayClick}>
   <div class="modal">
     <span class="close" on:click={close}>&times;</span>
     <h2>Issue: {ticket.issue}</h2>
@@ -27,7 +32,9 @@
       </div>
       
       <div class="tags">
-        <Badge label={ticket.status} num='pine' />
+        <span class="badge {ticket.status}">
+          {ticket.status}
+        </span>
         <h3>Category:</h3>
         <p>{ticket.category}</p>
         <h3>Priority:</h3>
@@ -45,6 +52,30 @@
 {/if}
 
 <style>
+  .badge {
+    width: fit-content;
+    border-radius: 10px;
+    padding: .4em .8em;
+    background-color: rgba(255, 204, 0, 0.404);
+    font-size: .7em;
+  }
+
+  .pending {
+    background-color: rgba(49, 49, 49, 0.15) !important;
+  }
+
+  .in {
+    background-color: rgba(255, 221, 0, 0.15) !important;
+  }
+
+  .completed {
+    background-color: rgba(0, 253, 0, 0.15) !important;
+  }
+
+  .canceled {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+  }
+
 
   .details > .main {
     flex: 1 1 80%;

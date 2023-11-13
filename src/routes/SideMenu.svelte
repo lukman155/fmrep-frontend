@@ -38,7 +38,7 @@
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
     { text: 'Inbox', link: 'inbox', icon: 'fa-envelope' },
-    { text: 'Notifications', link: 'notifications', icon: 'fa-bell' },
+    { text: 'Annoucements', link: 'annoucements', icon: 'fa-bell' },
     { text: 'Tickets', link: 'tickets', icon: 'fa-ticket' },
   ];
 </script>
