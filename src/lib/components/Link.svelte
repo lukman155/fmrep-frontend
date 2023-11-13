@@ -22,6 +22,5 @@
   a:hover {
     color: rgb(30, 63, 29);
     border: 2px solid #499c4881;
-    transform: scale(1.05);
   }
 </style>

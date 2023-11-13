@@ -3,10 +3,6 @@
   import { auth, db } from "../../../lib/firebase/firebase";
   import { checkAdminStatus } from "../../../lib/helper";
 
-  let uid = auth.currentUser.uid
-
-  let isAdmin = false;
-  isAdmin = checkAdminStatus;
 
   let ticketRef = collection(db, 'tickets' )
 

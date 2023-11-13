@@ -60,7 +60,10 @@
 
     const userTickets = [];
     querySnapshot.forEach((doc) => {
-      userTickets.push(doc.data());
+      userTickets.push({
+        id: doc.id,
+        data: doc.data(),
+      });
     });
 
     return userTickets;
@@ -69,7 +72,6 @@
     return [];
   }
 };
-
 
 const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
   try {
@@ -88,9 +90,10 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
 
     let allTickets = [];
     querySnapshot.forEach((doc) => {
-      allTickets.push(doc.data());
-      allTickets = allTickets
-    console.log(allTickets)
+      allTickets.push({
+        id: doc.id,
+        data: doc.data(),
+      });
     });
 
     return allTickets;
@@ -99,7 +102,6 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
     return [];
   }
 };
-
 
 
 
@@ -150,23 +152,23 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
       </thead>
       <tbody>
         {#each ticket_data as ticket, index}
-  <tr class="{ticket.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
+  <tr class="{ticket.data.status} ticket-hover" on:click={() => showTicketDetails(ticket)} key={index}>
     <td class="t-text">
       <i class="fa-regular fa-file-lines"></i>
       <p class="ticket-text">
-        {#if ticket.issue}
-          <span class="truncated">{ticket.issue}</span>
+        {#if ticket.data.issue}
+          <span class="truncated">{ticket.data.issue}</span>
         {:else}
           No Issue
         {/if}
         <br>
-        <span class="submit-badge">Submitted by {ticket.tenant_email}</span>
+        <span class="submit-badge">Submitted by {ticket.data.tenant_email}</span>
       </p>
     </td>
-    <td class="truncated">{ticket.address || 'No Address'}</td>
-    <td class="truncated">{ticket.category || 'No Category'}</td>
-    <td class="truncated">{ticket.priority || 'No Priority'}</td>
-    <td class="truncated">{ticket.status || 'No Status'}</td>
+    <td class="truncated">{ticket.data.address || 'No Address'}</td>
+    <td class="truncated">{ticket.data.category || 'No Category'}</td>
+    <td class="truncated">{ticket.data.priority || 'No Priority'}</td>
+    <td class="truncated">{ticket.data.status || 'No Status'}</td>
   </tr>
 {/each}
       </tbody>
@@ -285,7 +287,6 @@ const getAllTickets = async (startAfterDoc, ticketsPerPage) => {
   p {
     font-size: .8em;
     margin: .5em 0 0 0;
-
   }
 
   .title {
