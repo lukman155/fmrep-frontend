@@ -14,39 +14,34 @@
     }
   }
 </script>
-
 {#if show}
-<div class="modal-container" on:click={overlayClick}>
-  <div class="modal">
-    <span class="close" on:click={close}>&times;</span>
-    <h2>Issue: {ticket.issue}</h2>
-    <hr>
-    <div class="details">
-      
-      <div class="main">
-        <h3>Description:</h3>
-        <p>{ticket.description}</p>
-        <h3>images:</h3>
-        <p>{ticket.description}</p>
-        
+  <div class="modal-container" on:click={overlayClick}>
+    <div class="modal">
+      <span class="close" on:click={close}>&times;</span>
+      <h2>Issue: {ticket.data.issue || 'No Issue'}</h2>
+      <hr>
+      <div class="details">
+        <div class="main">
+          <h3>Description:</h3>
+          <p>{ticket.data.description || 'No Description'}</p>
+
+
+
+        <div class="tags">
+          <span class="badge {ticket.data.status || 'No Status'}">
+            {ticket.data.status || 'No Status'}
+          </span>
+          <h3>Category:</h3>
+          <p>{ticket.data.category || 'No Category'}</p>
+          <h3>Priority:</h3>
+          <p>{ticket.data.priority || 'No Priority'}</p>
+          <h3>Address:</h3>
+          <p>{ticket.data.address || 'No Address'}</p>
+        </div>
       </div>
-      
-      <div class="tags">
-        <span class="badge {ticket.status}">
-          {ticket.status}
-        </span>
-        <h3>Category:</h3>
-        <p>{ticket.category}</p>
-        <h3>Priority:</h3>
-        <p>{ticket.priority}</p>
-        <h3>Address:</h3>
-        <p>{ticket.address}</p>
-      #
-      </div>
-      
-  </div>
-  <hr>
-  <p>Submitted by {ticket.tenant_email}</p>
+      <hr>
+      <p>Submitted by {ticket.data.tenant_email || 'Unknown Tenant'}</p>
+    </div>
   </div>
 </div>
 {/if}
