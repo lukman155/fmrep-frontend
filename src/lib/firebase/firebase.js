@@ -19,7 +19,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.VITE_MESSAGING_SENDER_ID,
   appId: process.env.VITE_APP_ID,
   measurementId: process.env.VITE_MEASUREMENT_ID
-
+}
   
   
 
