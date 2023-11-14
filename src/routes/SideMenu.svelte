@@ -60,7 +60,6 @@
   let menuItems = [
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
-    { text: 'Inbox', link: 'inbox', icon: 'fa-envelope' },
     { text: 'Announcements', link: 'announcements', icon: 'fa-bell' },
     { text: 'Tickets', link: 'tickets', icon: 'fa-ticket' },
   ];

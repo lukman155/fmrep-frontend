@@ -11,6 +11,8 @@
     query,
   } from 'firebase/firestore';
   import { auth, db } from '../../../lib/firebase/firebase';
+  import InputField from '../../../lib/components/InputField.svelte';
+  import TextArea from '../../../lib/components/TextArea.svelte';
 
   let data = [];
   let title = '';
@@ -75,14 +77,10 @@
 
   {#if isAdmin}
   <form on:submit={addAnnouncement}>
-    <label>
-      Title:
-      <input bind:value={title} />
-    </label>
-    <label>
-      Content:
-      <textarea bind:value={content}></textarea>
-    </label>
+    <InputField bind:value={title} label='Title' />
+
+    <TextArea bind:value={content} label='Content'/>
+
     <button type="submit">Add Announcement</button>
   </form>
   {/if}
@@ -92,7 +90,7 @@
     <li>
       <h3>{title}</h3>
       <p>{content}</p>
-      <p>Created at: {formatDate(createdAt)}</p>
+      <sub>Sent at: {formatDate(createdAt)}</sub>
     </li>
     {/each}
   </ul>
@@ -100,8 +98,15 @@
 
 
 <style>
-  /* Add your styles here or link an external stylesheet */
-
+  h3::first-line{
+    text-transform: capitalize;
+  }
+  sub {
+    display: block;
+    text-align: right;
+    font-size: .8em;
+    color: #666;
+  }
   div {
     max-width: 800px;
     margin: 0 auto;
@@ -119,20 +124,6 @@
     margin-bottom: 20px;
   }
 
-  label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-
-  input,
-  textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-  }
-
   button {
     background-color: #4caf50;
     color: white;
@@ -140,6 +131,7 @@
     border: none;
     cursor: pointer;
     font-size: 16px;
+    border-radius: 10px;
   }
 
   button:hover {
@@ -155,7 +147,7 @@
     border: 1px solid #ddd;
     margin-bottom: 10px;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 15px;
     background-color: #f9f9f9;
   }
 
@@ -168,7 +160,6 @@
   p {
     color: #666;
     font-size: 16px;
-    margin: 0;
   }
 </style>
 

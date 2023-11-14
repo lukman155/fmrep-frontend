@@ -1,12 +1,32 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
+	import { db } from './../../../lib/firebase/firebase.js';
+  import { getDocs, collection, query, where } from 'firebase/firestore';
+
   export let property;
   export let onClose;
+
+  let propertyAssets = [];
 
   const closeModal = () => {
     onClose();
   };
+
+  // Function to fetch associated assets
+  const fetchAssociatedAssets = async () => {
+    try {
+      const assetsSnapshot = await getDocs(query(collection(db, 'assets'), where('propertyId', '==', property.id)));
+      propertyAssets = assetsSnapshot.docs.map(doc => doc.data());
+    } catch (error) {
+      console.error('Error fetching associated assets:', error.message);
+    }
+  };
+
+  // Call fetchAssociatedAssets when the property changes
+  $: if (property && property.id) {
+    fetchAssociatedAssets();
+  }
 </script>
 
 <div class="modal" on:click={closeModal}>
@@ -19,7 +39,22 @@
     {/if}
     <h3>{property.name}</h3>
     <p>{property.address}</p>
-    <!-- Add other property details as needed -->
+    
+    <!-- Display associated assets -->
+    <h4>Associated Assets</h4>
+    {#each propertyAssets as asset (asset.id)}
+      {#if asset.id !== undefined}
+        <div class="asset-details">
+          <h5>{asset.name}</h5>
+          {#if asset.imageUrl}
+            <img src={asset.imageUrl} alt="Asset" class="asset-image">
+          {:else}
+            <div class="default-image">No Image Available</div>
+          {/if}
+          <p>{asset.description}</p>
+        </div>
+      {/if}
+    {/each}
   </div>
 </div>
 
@@ -71,4 +106,11 @@
     font-size: 18px;
     margin-bottom: 15px;
   }
+
+  .asset-image {
+    max-width: 100%;
+    max-height: 200px; /* Adjust the max height as needed */
+    margin-bottom: 10px;
+  }
+
 </style>
