@@ -1,44 +1,67 @@
 <script>
+  import { checkAdminStatus } from './../lib/helper.js';
 
-  import { page } from '$app/stores'
-  import { goto } from '$app/navigation' 
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { signOut } from 'firebase/auth';
   import { auth } from '../lib/firebase/firebase';
-  import { onMount } from 'svelte';
-
+  import { onMount, onDestroy } from 'svelte';
 
   $: currentRoute = $page.route.id;
 
-  let email;
+  let email = 'loading';
+  let isAdmin = false;
+
+  const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+    if (user) {
+      onAuthStateChanged(user);
+    } else {
+      onAuthStateChanged(null);
+    }
+  });
 
   onMount(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        email = auth?.currentUser?.email
-      } else {
-        
-      }
-    });
+    // Initial check when the component is mounted
+    checkAdmin();
   });
+
+  onDestroy(() => {
+    // Unsubscribe from the auth state changes when the component is destroyed
+    unsubscribeAuth();
+  });
+
+  const onAuthStateChanged = (user) => {
+    if (user) {
+      email = user.email;
+      checkAdmin();
+    } else {
+      email = 'loading';
+      isAdmin = false;
+    }
+  };
+
+  const checkAdmin = async () => {
+    isAdmin = await checkAdminStatus();
+  };
 
   const handleLogOut = () => {
     signOut(auth)
-    .then(() => {
-      localStorage.removeItem('uid');
-      document.cookie = `isLoggedIn=false; max-age=3600`;
+      .then(() => {
+        localStorage.removeItem('uid');
+        document.cookie = `isLoggedIn=false; max-age=3600`;
 
-      goto('/login');
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-  }
+        goto('/login');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   let menuItems = [
     { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
     { text: 'Inbox', link: 'inbox', icon: 'fa-envelope' },
-    { text: 'Annoucements', link: 'annoucements', icon: 'fa-bell' },
+    { text: 'Announcements', link: 'announcements', icon: 'fa-bell' },
     { text: 'Tickets', link: 'tickets', icon: 'fa-ticket' },
   ];
 </script>
@@ -48,9 +71,21 @@
     
     <a class="menu-item logo" href='/'><img src="/favicon.png" alt=""></a>
 
-    {#each menuItems as item (item.text)}
-      <a class="menu-item {item.link} {currentRoute == '/'+item.link? 'active': ''}" href='/{item.link}'><i class="fa {item.icon}"></i> {item.text}</a>
+    {#if !isAdmin}
+    {#each menuItems as item (item.link)}
+      {#if item.link !== 'properties'}
+        <a class="menu-item {item.link} {currentRoute.includes(item.link) ? 'active': ''}" href='/{item.link}'>
+          <i class="fa {item.icon}"></i> {item.text}
+        </a>
+      {/if}
     {/each}
+  {:else}
+    {#each menuItems as item (item.link)}
+      <a class="menu-item {item.link} {currentRoute.includes(item.link) ? 'active': ''}" href='/{item.link}'>
+        <i class="fa {item.icon}"></i> {item.text}
+      </a>
+    {/each}
+  {/if}
   </div>
   <div class="bottom links">
     <a class="menu-item support {currentRoute == '/support'? 'active': ''}" href='/support'><i class="fa fa-question-circle"></i> Support</a>

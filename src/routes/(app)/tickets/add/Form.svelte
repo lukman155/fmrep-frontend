@@ -1,4 +1,5 @@
 <script>
+	import TextArea from './../../../../lib/components/TextArea.svelte';
 	import InputField from './../../../../lib/components/InputField.svelte';
 	import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
 	import { getDocs } from 'firebase/firestore';
@@ -7,7 +8,6 @@
   import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
   import { userAuth } from '../../../../store/authStore';
   import { auth, db } from '../../../../lib/firebase/firebase';
-  import TextArea from './TextArea.svelte';
 
   export let active_step;
 

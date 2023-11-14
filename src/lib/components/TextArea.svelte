@@ -1,5 +1,5 @@
 <script>
-	export let value, label;
+	export let value, label, id;
 	
 </script>
 
@@ -7,8 +7,10 @@
 
 <label> 
   <p class={value?'above':'center'}>{label}</p>
-  <textarea bind:value={value} name="description" id="desc" cols="30" rows="10"></textarea>
+  <textarea bind:value={value} name="description" {id} cols="30" rows="10"></textarea>
 </label>
+
+
 
 <style>
 	

@@ -1,5 +1,5 @@
 <script>
-	export let value, label, type = 'text';
+	export let value, id, label, type = 'text';
 	
 	function typeAction(node){
 		node.type = type;
@@ -9,7 +9,7 @@
 
 <label>
   <p class={value?'above':'center'}>{label}</p>
-	<input use:typeAction class="input" bind:value={value} placeholder={value}/>
+	<input use:typeAction class="input" bind:value={value} placeholder={value} {id}/>
 </label>
 
 
