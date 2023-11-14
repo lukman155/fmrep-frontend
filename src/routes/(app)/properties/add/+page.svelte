@@ -1,61 +1,102 @@
 <script>
-	import { goto } from '$app/navigation';
-  import { addDoc, collection, doc, setDoc, Timestamp } from "firebase/firestore";
+  import { onMount } from 'svelte';
+  import { addDoc, collection, Timestamp } from "firebase/firestore";
   import { db, storage } from "../../../../lib/firebase/firebase";
-  import { ref } from "firebase/storage";
-
+  import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
   let name = "";
-  let tenant = "";
   let address = "";
-  let building_type = "";
+  let imageFile = null;
   let loading = false;
   let error = false;
 
-  const newProp = async() => {
-    const docData = {
-      name: name,
-      tenant,
-      address: address,
-      building_type: building_type,
-      createdAt: Timestamp.now(),
-    };
+  // Fields for adding assets
+  let assets = [{ id: 0, name: "", description: "" }]; // Initial array with one empty asset
 
-    const docRef = async() =>{
-      return await addDoc(collection(db, "properties"), docData);
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      imageFile = file;
     }
-    docRef()
-    console.log("Document successfully written!", docRef.id);
-    history.back()
   };
 
+  const addPropertyAndAssets = async () => {
+    try {
+      loading = true;
+
+      // Upload the image to Firebase Storage
+      let imageUrl = null;
+      if (imageFile) {
+        const storageRef = ref(storage, `property_images/${name}_${Date.now()}`);
+        await uploadBytes(storageRef, imageFile);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+
+      // Add property data to Firestore
+      const propertyData = {
+        name: name,
+        address: address,
+        imageUrl: imageUrl,
+        createdAt: Timestamp.now(),
+      };
+
+      const propertyRef = await addDoc(collection(db, "properties"), propertyData);
+      const propertyId = propertyRef.id;
+
+      // Add each asset to Firestore
+      for (const asset of assets) {
+        const assetData = {
+          name: asset.name,
+          description: asset.description,
+          propertyId: propertyId,
+          createdAt: Timestamp.now(),
+        };
+
+        await addDoc(collection(db, "assets"), assetData);
+      }
+
+      loading = false;
+      // Additional actions after adding property and assets
+    } catch (error) {
+      console.error("Error adding property and assets:", error.message);
+      loading = false;
+      error = true;
+    }
+  };
+
+  const addAnotherAsset = () => {
+    assets = [...assets, { id: assets.length, name: "", description: "" }];
+  };
 </script>
 
 <a href="/properties">Back</a>
 
 <form>
-  <label>
-    <p class={name?'above':'center'}>Name</p>
-    <input bind:value={name} type="text" placeholder="Name" />
-  </label>
+  <!-- Fields for adding property -->
+  <label for="propertyName">Name:</label>
+  <input type="text" id="propertyName" bind:value={name} />
 
-  <label>
-    <p class={address?'above':'center'}>Address</p>
-    <input bind:value={address} type="text" placeholder="Address" />
-  </label>
+  <label for="propertyAddress">Address:</label>
+  <input type="text" id="propertyAddress" bind:value={address} />
 
-  <label>
-    <p class={tenant?'above':'center'}>Tenant</p>
-    <input bind:value={tenant} type="text" placeholder="Tenant" />
-  </label>
+  <!-- Input field for selecting an image -->
+  <label for="imageInput">Select Image</label>
+  <input type="file" id="imageInput" accept="image/*" on:change={handleImageChange} />
 
-  <label>
-    <p class={building_type?'above':'center'}>Building Type</p>
-    <input bind:value={building_type} type="text" placeholder="Building Type" />
-  </label>
+  <!-- Fields for adding assets -->
+  {#each assets as asset (asset.id)}
+    <label for={`assetName${asset.id}`}>Asset Name:</label>
+    <input type="text" bind:value={asset.name} id={`assetName${asset.id}`} />
 
+    <label for={`assetDescription${asset.id}`}>Asset Description:</label>
+    <textarea bind:value={asset.description} id={`assetDescription${asset.id}`}></textarea>
 
-  <button class="submit-btn" on:click={newProp} on:submit={newProp}>
+    {#if asset.id === assets.length - 1}
+      <button type="button" on:click={addAnotherAsset}>Add Another Asset</button>
+    {/if}
+  {/each}
+
+  <button class="submit-btn" on:click={addPropertyAndAssets} on:submit={addPropertyAndAssets}>
     {#if error}
       Try Again
     {:else if loading}
@@ -65,5 +106,3 @@
     {/if}
   </button>
 </form>
-
-Add properties

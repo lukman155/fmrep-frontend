@@ -57,6 +57,10 @@
           goto('/dashboard');
         } else {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          await setDoc(doc(db, "users", user.uid), {
+            createdAt: Timestamp.now(),
+            property_id: '',
+          });
           $userAuth = userCredential.user;
           document.cookie = `isLoggedIn=true; max-age=3600`;
           goto('/dashboard');

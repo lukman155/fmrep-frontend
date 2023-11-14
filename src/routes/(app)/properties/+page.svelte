@@ -4,68 +4,78 @@
   import { onMount } from "svelte";
   import { db } from "../../../lib/firebase/firebase";
   import Link from "../../../lib/components/Link.svelte";
+  import PropertyModal from './PropertyModal.svelte';
 
+let properties = [];
+let selectedProperty = null;
+let error = null;
 
-  const properties = [];
-
-
-  const fetchProperties = async() => {
-    const querySnapshot = await getDocs(collection(db, "properties"));
-    querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      properties.push(doc.data())
-    });
-    return properties
+const fetchProperties = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'properties'));
+    properties = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.error('Error fetching properties:', err.message);
+    error = err.message;
   }
+};
 
+onMount(() => {
+  fetchProperties();
+});
 </script>
 
-
 <section>
-  <div class="title">
-    <h1>Properties</h1>
-    <p>Manage all your Properties</p>
+<div class="title">
+  <h1>Properties</h1>
+  <p>Manage all your Properties</p>
   <Link to='/properties/add' text='Add Property'/>
+</div>
+<h2>Properties</h2>
 
-  </div>
+{#if selectedProperty !== null}
+  <!-- Use PropertyDetailsModal component for the modal -->
+  <PropertyModal
+    property={selectedProperty}
+    onClose={() => selectedProperty = null}
+  />
+{/if}
 
-  <p class="badge">12 Properties Listed</p>
+{#if error}
+  <p>Something went wrong: {error}</p>
+{:else}
+  <p class="badge">{properties.length} Properties Listed</p>
 
-  
   <table>
-      <thead>
-          <tr>
-            <th>Property</th>
-              <th>Tenant</th>
-              <th>Building Type</th>
-              <th>Lease Term</th>
-          </tr>
-      </thead>
-      <tbody>
-        {#await fetchProperties()}
-        <p>Loading</p>
-        {:then properties}
-          {#each properties as property}
-            <tr>
-              <td class="t-text">
-                <div class="img-con">
-                  <img src="pics/house.jpg" alt="prop-image">
-                </div>
-                <p class="ticket-text">{property.name}<br>
-                  <span class="submit-badge">{property.address}</span></p>
-              </td>
-              <td>Dennis</td>
-              <td>2 Bedroom Ensuite</td>
-              <td>1 Year</td>
-            </tr>
-          {/each}
-          {:catch error}
-          <p>Something went wrong</p>
-          <p>{error}</p>
-          {/await}
-        </tbody>
+    <thead>
+      <tr>
+        <th>Property Name</th>
+        <th>No. of Tenants</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each properties as property}
+        <tr on:click={() => selectedProperty = property}>
+          <td class="t-text">
+            <div class="img-con">
+              <!-- Use the property's image URL if available -->
+              {#if property.imageUrl}
+                <img src={property.imageUrl} alt="prop-image">
+              {:else}
+                <!-- Use a default image if imageUrl is not available -->
+                <img src="pics/house.jpg" alt="prop-image">
+              {/if}
+            </div>
+            <p class="ticket-text">{property.name}<br>
+              <span class="submit-badge">{property.address}</span>
+            </p>
+          </td>
+          <td>23</td>
+        </tr>
+      {/each}
+    </tbody>
   </table>
-
+{/if}
 </section>
 
 
@@ -105,11 +115,10 @@
   table {
     width: 100%;
     text-align: left;
-    min-width: 800px;
+    min-width: 200px;
   }
 
   td, th {
-
     position: relative;
     padding: .7em 0;
     border-bottom: 1px solid rgba(0,0,0,.1);

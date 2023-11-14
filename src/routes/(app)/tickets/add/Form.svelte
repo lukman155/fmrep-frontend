@@ -1,18 +1,16 @@
 <script>
+	import InputField from './../../../../lib/components/InputField.svelte';
 	import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
 	import { getDocs } from 'firebase/firestore';
 	import { query } from 'firebase/firestore';
 	import Button from './../../../../lib/components/Button.svelte';
   import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
-	import InputField from './InputField.svelte';
   import { userAuth } from '../../../../store/authStore';
   import { auth, db } from '../../../../lib/firebase/firebase';
   import TextArea from './TextArea.svelte';
 
-
   export let active_step;
 
-  let userData = $userAuth;
   let selectedCategory = '';
   let uploading = false
 
@@ -24,8 +22,6 @@
     priority: 'Low'.toLowerCase(),
     category: selectedCategory.toLowerCase(),
 	}
-
-  
 
   const newProp = async () => {
   if (uploading) {
