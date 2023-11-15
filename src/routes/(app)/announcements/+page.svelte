@@ -5,6 +5,8 @@
     Timestamp,
     addDoc,
     collection,
+    doc,
+    deleteDoc,
     getDocs,
     onSnapshot,
     orderBy,
@@ -48,6 +50,15 @@
     }
   };
 
+  const deleteAnnouncement = async (id) => {
+    try {
+      const announcementRef = doc(db, 'announcements', id);
+      await deleteDoc(announcementRef);
+    } catch (error) {
+      console.error('Error deleting announcement:', error.message);
+    }
+  };
+
   let unsubscribe;
 
   onMount(() => {
@@ -58,19 +69,17 @@
       data = snapshot.docs.map((doc) => {
         const announcementData = doc.data();
         const createdAt = announcementData.createdAt.toDate();
-        return { ...announcementData, createdAt };
+        return { id: doc.id, ...announcementData, createdAt };
       });
     });
   });
 
   onDestroy(() => {
-  if (unsubscribe) {
-    unsubscribe();
-  }
-});
+    if (unsubscribe) {
+      unsubscribe();
+    }
+  });
 </script>
-
-
 
 <div>
   <h1>Announcements</h1>
@@ -78,19 +87,21 @@
   {#if isAdmin}
   <form on:submit={addAnnouncement}>
     <InputField bind:value={title} label='Title' />
-
     <TextArea bind:value={content} label='Content'/>
-
     <button type="submit">Add Announcement</button>
   </form>
   {/if}
 
   <ul>
-    {#each data as { title, content, createdAt }}
+    {#each data as { id, title, content, createdAt }}
     <li>
       <h3>{title}</h3>
       <p>{content}</p>
       <sub>Sent at: {formatDate(createdAt)}</sub>
+  
+      {#if isAdmin}
+        <button on:click={() => deleteAnnouncement(id)}>Delete</button>
+      {/if}
     </li>
     {/each}
   </ul>

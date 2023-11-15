@@ -57,6 +57,7 @@
           goto('/dashboard');
         } else {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
           await setDoc(doc(db, "users", user.uid), {
             createdAt: Timestamp.now(),
             property_id: '',
@@ -93,7 +94,7 @@
           break;
         // Add more cases as needed
         default:
-          errorMsg = 'deaf';
+          errorMsg = error.message;
       }
       console.log(errorMsg)
 

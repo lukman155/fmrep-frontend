@@ -18,6 +18,7 @@
     try {
       const assetsSnapshot = await getDocs(query(collection(db, 'assets'), where('propertyId', '==', property.id)));
       propertyAssets = assetsSnapshot.docs.map(doc => doc.data());
+      console.log(propertyAssets)
     } catch (error) {
       console.error('Error fetching associated assets:', error.message);
     }
@@ -42,18 +43,20 @@
     
     <!-- Display associated assets -->
     <h4>Associated Assets</h4>
-    {#each propertyAssets as asset (asset.id)}
-      {#if asset.id !== undefined}
+    {#each propertyAssets as asset, index (index)}
+      
         <div class="asset-details">
           <h5>{asset.name}</h5>
-          {#if asset.imageUrl}
-            <img src={asset.imageUrl} alt="Asset" class="asset-image">
-          {:else}
-            <div class="default-image">No Image Available</div>
-          {/if}
+          {#if asset.imageUrls && asset.imageUrls.length > 0}
+    {#each asset.imageUrls as imageUrl}
+      <img src={imageUrl} alt="Asset" class="asset-image">
+    {/each}
+  {:else}
+    <div class="default-image">No Image Available</div>
+  {/if}
           <p>{asset.description}</p>
         </div>
-      {/if}
+      
     {/each}
   </div>
 </div>

@@ -1,10 +1,11 @@
 <script>
+	import AddAssetForm from './AddAssetForm.svelte';
+	import { addAsset } from './AddAssetForm.svelte';
 	import InputField from './../../../../lib/components/InputField.svelte';
   import { onMount } from 'svelte';
   import { addDoc, collection, Timestamp } from "firebase/firestore";
   import { db, storage } from "../../../../lib/firebase/firebase";
   import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-  import TextArea from '../../../../lib/components/TextArea.svelte';
 
   let name = "";
   let address = "";
@@ -59,26 +60,10 @@
       const propertyId = propertyRef.id;
 
       // Add each asset to Firestore
-      for (const asset of assets) {
-        let assetImageUrls = [];
-        for (const imageFile of asset.imageFiles) {
-          const assetImageRef = ref(storage, `asset_images/${asset.name}_${Date.now()}`);
-          await uploadBytes(assetImageRef, imageFile);
-          const imageUrl = await getDownloadURL(assetImageRef);
-          assetImageUrls.push(imageUrl);
-        }
 
-        const assetData = {
-          name: asset.name,
-          description: asset.description,
-          imageUrls: assetImageUrls,
-          propertyId: propertyId,
-          createdAt: Timestamp.now(),
-        };
+      await addAsset(propertyId);
 
-        await addDoc(collection(db, "assets"), assetData);
-      }
-
+      
       loading = false;
       // Additional actions after adding property and assets
     } catch (error) {
@@ -109,16 +94,16 @@
   <input type="file" id="propertyImageInput" accept="image/*" on:change={handlePropertyImageChange} class="file-input" />
 
   <!-- Fields for adding assets -->
-  {#each assets as asset (asset.id)}
+  <!-- {#each assets as asset (asset.id)}
     <div class="asset-container">
       <InputField id={`assetName${asset.id}`} label={'Asset Name'} bind:value={asset.name} />
       <TextArea id={`assetDescription${asset.id}`} label={'Asset Description'} bind:value={asset.description}/>
 
-      <!-- Input field for selecting asset images -->
+      
       <label for={`assetImageInput${asset.id}`}>Select Asset Images:</label>
       <input type="file" id={`assetImageInput${asset.id}`} accept="image/*" multiple on:change={(e) => handleAssetImageChange(e, asset.id)} class="file-input" />
 
-      <!-- Display selected asset images -->
+      
       {#each asset.imageFiles as image (image)}
         <div class="asset">
           <img src={URL.createObjectURL(image)} alt="Asset" />
@@ -128,8 +113,10 @@
       {#if asset.id === assets.length - 1}
         <button type="button" on:click={addAnotherAsset}>Add Another Asset</button>
       {/if}
-    </div>
-  {/each}
+    </div> 
+  {/each}  -->
+
+  <AddAssetForm ></AddAssetForm>
 
   <button class="submit-btn" on:click={addPropertyAndAssets} on:submit={addPropertyAndAssets}>
     {#if error}
