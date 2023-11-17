@@ -4,9 +4,12 @@
 </script>
 
 <div class="home-page">
-  <div class="logo">
-    <img src="./favicon.png" alt="logo" >
+  <div class="white-con">
+    <div class="logo">
+      <img src="./favicon.png" alt="logo" >
+    </div>
   </div>
+  
 <div class="about">
   <h1>Welcome to FMRepEX</h1>
   <p>
@@ -14,13 +17,47 @@
   </p>
   <div class="links">
     <a href="/login" class="login button">Login</a>
-    <a href="#about" class="login button">About</a>
+    <a href="#about" class="about1 button">About</a>
   </div>
   
 </div> 
 </div>
-
 <style>
+
+  .button:hover {
+    border-color: #4b0000;
+    color: #4b0000;
+  }
+  .about1.button:hover {
+    background-color: #4b0000;
+    border-color: #4b0000;
+    color: white;
+
+  }
+
+  .links {
+    display: flex;
+    gap: 10px;
+  }
+.white-con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+  .about1.button {
+     border: 5px solid white;
+    /* background-color: white; */
+    text-decoration: none;
+    padding: .5em 1em;
+    font-weight: 700;
+    width: 4em;
+    font-size: 1.2em;
+    text-align: center;
+    color: #4A9C48;
+    border-radius: 1.5em;
+    background-color: white;
+  }
 
   p {
     margin-bottom: 2em;
@@ -28,15 +65,16 @@
 
   .button {
     border: 5px solid white;
-    /* background-color: white; */
     text-decoration: none;
-    padding: .8em 1.5em;
+    padding: .5em 1em;
+    display: block;
     font-weight: 700;
     width: 4em;
     font-size: 1.2em;
     text-align: center;
     color: white;
     border-radius: 1.5em;
+    margin-bottom:.5em ;
 
   }
 
@@ -46,10 +84,9 @@
   }
   .home-page {
     display: flex;
-    height: 100vh;
-    align-items: center;
-    justify-content: center;
     color: white;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .home-page > div {
@@ -58,9 +95,13 @@
   }
 
   .logo {
-    display: flex;
-    justify-content: center;
-    
+    width: 180px;
+    height: 180px
+  }
+
+  .logo > img {
+    width: 100%;
+
   }
 
 
@@ -74,5 +115,12 @@
 justify-content: center;   
 flex-direction: column;
 padding: 0 2rem;
+  }
+
+  @media (min-width: 700px){
+    .home-page {
+      flex-direction: row;
+      height: 100%;
+    }
   }
 </style>
