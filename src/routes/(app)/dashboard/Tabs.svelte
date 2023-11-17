@@ -1,5 +1,5 @@
 <script>
-  let tabs = ['About', 'Tickets', 'Tenants'];
+  let tabs = ['Assets', 'Tickets', 'Tenants'];
   let activeTab = tabs[0];
 </script>
 
@@ -13,7 +13,7 @@
   </div>
 </div>
 <div class="tab-content">
-  {#if activeTab == 'About'}
+  {#if activeTab == 'Assets'}
   <div class="field">
   <p>Property type</p>
   <p>Residential</p>
@@ -47,7 +47,7 @@
   {/if}
 
   {#if activeTab == 'Tenants' }
-  <p>Loading Profile</p>
+  <p>Tenants</p>
   {/if}
 </div>
 
@@ -64,6 +64,7 @@
     font-size: .8em;
     padding: 10px;
     cursor: pointer;
+    width: 100%;
   }
 
   .active {

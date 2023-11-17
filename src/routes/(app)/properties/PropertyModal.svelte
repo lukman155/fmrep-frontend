@@ -1,12 +1,16 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
+	import Tabs from './../dashboard/Tabs.svelte';
 	import { db } from './../../../lib/firebase/firebase.js';
   import { getDocs, collection, query, where } from 'firebase/firestore';
   import CreateTenant from './CreateTenant.svelte';
 
   export let property;
   export let onClose;
+
+  let tabs = ['Assets', 'Tickets', 'Tenants'];
+  let activeTab = tabs[0];
 
   let propertyAssets = [];
 
@@ -51,28 +55,57 @@
         <p>{property.address}</p>
       </div>
     </div>
+
+    <div class="description">
+      <p>5 units of 3-bedroom bungalow with BQ and some blah blah blah</p>
+    </div>
+
+    <div class="tab-container">
+      <div class="tabs">
+        {#each tabs as tab}
+            <div class='tab {activeTab === tab ? "active" : ""}' on:click={() => activeTab = tab}>
+              {tab}
+            </div>
+        {/each}
+      </div>
+    </div>
+    <div class="tab-content">
+      {#if activeTab == 'Assets'}
+
+        <div class="assets">
+          {#each propertyAssets as asset, index (index)}
+            <div class="asset-details">
+              <h5>{asset.name}</h5>
+              {#if asset.imageUrls && asset.imageUrls.length > 0}
+                {#each asset.imageUrls as imageUrl}
+                  <img src={imageUrl} alt="Asset" class="asset-image">
+                {/each}
+              {:else}
+                <div class="default-image">No Image Available</div>
+              {/if}
+                <p>{asset.description}</p>
+            </div>
+          {/each}
+        </div>
+    
+      {/if}
+    
+    
+      {#if activeTab == 'Tickets' }
+
+      {/if}
+    
+      {#if activeTab == 'Tenants' }
+        <div class="actions tenants">
+          <CreateTenant propertyId={property.id} />
+        </div>
+      {/if}
+    </div>
     
     <!-- Display associated assets -->
     <div class="sub-con">
-      <div class="assets">
-        <h4>Assets</h4>
-        {#each propertyAssets as asset, index (index)}
-          <div class="asset-details">
-            <h5>{asset.name}</h5>
-            {#if asset.imageUrls && asset.imageUrls.length > 0}
-              {#each asset.imageUrls as imageUrl}
-                <img src={imageUrl} alt="Asset" class="asset-image">
-              {/each}
-            {:else}
-              <div class="default-image">No Image Available</div>
-            {/if}
-              <p>{asset.description}</p>
-          </div>
-        {/each}
-      </div>
-      <div class="actions">
-        <CreateTenant propertyId={property.id} />
-      </div>
+      
+
 
     </div>
   </div>
@@ -80,8 +113,14 @@
 
 <style>
 
+.description {
+  padding: 1em;
+}
 .image-con {
   position: relative;
+margin-bottom: 2em;
+width: 100%;
+
 }
   .prop-title {
 position: absolute;
@@ -90,8 +129,9 @@ border: 1px solid #4A9C48;
 border-radius: 20px;
 left: 50%;
 transform: translateX(-50%);
-background-color: rgba(255, 255, 255, 0.304);
+background-color: #499c48;
 padding: .7em;
+color: white;
   }
 
   h3 {
@@ -103,6 +143,7 @@ padding: .7em;
     margin: 0;
   }
   .sub-con {
+    margin-top: 1em;
     display: flex;
     padding: 1em;
   }
@@ -120,6 +161,10 @@ padding: .7em;
 
   .modal-content {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: #fefefe;
     margin: 10% auto;
     border-radius: 30px;
@@ -151,7 +196,7 @@ padding: .7em;
 
   .property-image {
     width: 100%;
-    max-height: 300px;
+    max-height: 400px;
     border-radius: 30px 30px 0 0;
      /* Adjust the max height as needed */
   }
@@ -164,7 +209,38 @@ padding: .7em;
 
   .asset-image {
     max-width: 100%;
-    max-height: 200px; /* Adjust the max height as needed */
+    max-height: 200px; 
+  }
+
+  /* tab styles */
+
+  .tab-container {
+    width: 100%;
+    
+  }
+  .tabs {
+    display: flex;
+  }
+
+  .tab {
+    font-size: .8em;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    border-bottom: 1px solid #499c484f;
+  }
+
+  .tab:hover {
+    border-bottom: 2px solid #499c484f;
+
+  }
+
+  .active {
+    font-weight: 600;
+    border-bottom: 2px solid #4A9C48;
+  }
+  .active:hover {
+    border-bottom: 2px solid #4A9C48;
   }
 
 </style>
