@@ -1,10 +1,10 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
-	import Tabs from './../dashboard/Tabs.svelte';
 	import { db } from './../../../lib/firebase/firebase.js';
-  import { getDocs, collection, query, where } from 'firebase/firestore';
+  import { getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
   import CreateTenant from './CreateTenant.svelte';
+  import ViewTenants from './ViewTenants.svelte';
 
   export let property;
   export let onClose;
@@ -17,6 +17,43 @@
   const closeModal = () => {
     onClose();
   };
+
+  const deleteProperty = async () => {
+    try {
+      // Delete property
+      await deleteDoc(doc(db, 'properties', property.id));
+
+      // Fetch associated assets and delete them
+      const assetsSnapshot = await getDocs(query(collection(db, 'assets'), where('propertyId', '==', property.id)));
+      const assetDeletePromises = assetsSnapshot.docs.map(async (assetDoc) => {
+        await deleteDoc(assetDoc.ref);
+      });
+
+      // Fetch associated users and delete them
+      // Replace 'users' with your actual collection name
+      const usersSnapshot = await getDocs(query(collection(db, 'users'), where('propertyId', '==', property.id)));
+      const userDeletePromises = usersSnapshot.docs.map(async (userDoc) => {
+        await deleteDoc(userDoc.ref);
+      });
+
+      // Fetch associated tickets and delete them
+      // Replace 'tickets' with your actual collection name
+      const ticketsSnapshot = await getDocs(query(collection(db, 'tickets'), where('propertyId', '==', property.id)));
+      const ticketDeletePromises = ticketsSnapshot.docs.map(async (ticketDoc) => {
+        await deleteDoc(ticketDoc.ref);
+      });
+
+      // Wait for all delete operations to complete
+      await Promise.all([...assetDeletePromises, ...userDeletePromises, ...ticketDeletePromises]);
+
+      console.log('Property and associated entities deleted successfully!');
+      closeModal();
+      location.reload();
+    } catch (error) {
+      console.error('Error deleting property:', error.message);
+    }
+  };
+
 
   // Function to fetch associated assets
   const fetchAssociatedAssets = async () => {
@@ -92,11 +129,12 @@
     
     
       {#if activeTab == 'Tickets' }
-
+        <ViewTenants propertyId={property.id} />
       {/if}
     
       {#if activeTab == 'Tenants' }
         <div class="actions tenants">
+          <button on:click={deleteProperty}>Delete Property</button>
           <CreateTenant propertyId={property.id} />
         </div>
       {/if}
