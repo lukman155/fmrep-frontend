@@ -1,7 +1,7 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
-	import { db } from './../../../lib/firebase/firebase.js';
+	import { auth, db } from './../../../lib/firebase/firebase.js';
   import { getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
   import CreateTenant from './CreateTenant.svelte';
   import ViewTenants from './ViewTenants.svelte';
@@ -135,17 +135,11 @@
       {#if activeTab == 'Tenants' }
         <div class="actions tenants">
           <button on:click={deleteProperty}>Delete Property</button>
-          <CreateTenant propertyId={property.id} />
+          <CreateTenant propertyId={property.id} adminId={auth.currentUser.id} />
         </div>
       {/if}
     </div>
     
-    <!-- Display associated assets -->
-    <div class="sub-con">
-      
-
-
-    </div>
   </div>
 </div>
 

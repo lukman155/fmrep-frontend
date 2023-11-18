@@ -20,6 +20,32 @@
       console.error('Error fetching tenants:', error.message);
     }
   };
+
+  const deleteTenant = async (userId) => {
+    try {
+      // Replace 'your-function-endpoint' with the actual endpoint URL of your Cloud Function
+      const response = await fetch('https://us-central1-fmrep-sveltekit.cloudfunctions.net/deleteUser?userId=' + userId, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        console.log('User deleted successfully');
+        // Refresh tenants list or update UI as needed
+      } else {
+        console.error('Error deleting user:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error.message);
+    }
+  };
+
+  // Example usage of deleteTenant function
+  const handleDelete = async (userId) => {
+    if (confirm('Are you sure you want to delete this user?')) {
+      await deleteTenant(userId);
+      await loadTenants(); // Refresh the tenant list after deletion
+    }
+  };
 </script>
 
 <div>
@@ -33,6 +59,7 @@
       {#each tenants as tenant (tenant.email)}
         <li>
           <strong>{tenant.fullName}</strong> - {tenant.email}
+          <button on:click={() => handleDelete(tenant.userId)}>Delete</button>
         </li>
       {/each}
     </ul>

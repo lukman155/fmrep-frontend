@@ -13,6 +13,8 @@
   const ticketsPerPage = 10;
   let ticket_data = [];
   let startAfterDoc;
+  let filterStatus = '';
+  let filterPriority = '';
 
   // State for displaying ticket details modal
   let showModal = false;
@@ -121,8 +123,21 @@
               <th>Tickets</th>
               <th>Address</th>
               <th>Category</th>
-              <th>Priority</th>
-              <th>Status</th>
+              <select bind:value={filterPriority}>
+                <option value="">Priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <th>
+                <select bind:value={filterStatus}>
+                <option value="">Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Canceled">Canceled</option>
+              </select>
+            </th>
           </tr>
       </thead>
       <tbody>

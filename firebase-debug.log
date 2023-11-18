@@ -1,0 +1,123 @@
+[debug] [2023-11-18T15:40:45.766Z] ----------------------------------------------------------------------
+[debug] [2023-11-18T15:40:45.771Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Monsieur Lukman\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2023-11-18T15:40:45.773Z] CLI Version:   12.9.1
+[debug] [2023-11-18T15:40:45.774Z] Platform:      win32
+[debug] [2023-11-18T15:40:45.775Z] Node Version:  v18.16.0
+[debug] [2023-11-18T15:40:45.778Z] Time:          Sat Nov 18 2023 16:40:45 GMT+0100 (West Africa Standard Time)
+[debug] [2023-11-18T15:40:45.778Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-18T15:40:46.045Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-18T15:40:46.047Z] > authorizing via signed-in user (lukmanabdulkarim15@gmail.com)
+[debug] [2023-11-18T15:40:46.048Z] [iam] checking project fmrep-sveltekit for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2023-11-18T15:40:46.054Z] > refreshing access token with scopes: []
+[debug] [2023-11-18T15:40:46.058Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-11-18T15:40:46.060Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-18T15:40:47.182Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-11-18T15:40:47.183Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-18T15:40:47.202Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/fmrep-sveltekit:testIamPermissions [none]
+[debug] [2023-11-18T15:40:47.203Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/fmrep-sveltekit:testIamPermissions x-goog-quota-user=projects/fmrep-sveltekit
+[debug] [2023-11-18T15:40:47.203Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/fmrep-sveltekit:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2023-11-18T15:40:49.843Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/fmrep-sveltekit:testIamPermissions 200
+[debug] [2023-11-18T15:40:49.844Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/fmrep-sveltekit:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2023-11-18T15:40:49.846Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/fmrep-sveltekit/serviceAccounts/fmrep-sveltekit@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2023-11-18T15:40:49.846Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/fmrep-sveltekit/serviceAccounts/fmrep-sveltekit@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2023-11-18T15:40:53.108Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/fmrep-sveltekit/serviceAccounts/fmrep-sveltekit@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2023-11-18T15:40:53.109Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/fmrep-sveltekit/serviceAccounts/fmrep-sveltekit@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'fmrep-sveltekit'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] +  functions: Finished running predeploy script. 
+[debug] [2023-11-18T15:41:00.313Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit [none]
+[debug] [2023-11-18T15:41:01.339Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit 200
+[debug] [2023-11-18T15:41:01.340Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit {"projectId":"fmrep-sveltekit","projectNumber":"213083252573","displayName":"fmRep-SvelteKit","name":"projects/fmrep-sveltekit","resources":{"hostingSite":"fmrep-sveltekit","storageBucket":"fmrep-sveltekit.appspot.com","locationId":"europe-west"},"state":"ACTIVE","etag":"1_bc74ef2d-2212-4745-8752-6b8ef484b505"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2023-11-18T15:41:01.351Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudfunctions.googleapis.com [none]
+[debug] [2023-11-18T15:41:01.351Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/fmrep-sveltekit
+[debug] [2023-11-18T15:41:01.354Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/runtimeconfig.googleapis.com [none]
+[debug] [2023-11-18T15:41:01.354Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/fmrep-sveltekit
+[debug] [2023-11-18T15:41:01.357Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudbuild.googleapis.com [none]
+[debug] [2023-11-18T15:41:01.358Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudbuild.googleapis.com x-goog-quota-user=projects/fmrep-sveltekit
+[debug] [2023-11-18T15:41:01.360Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/artifactregistry.googleapis.com [none]
+[debug] [2023-11-18T15:41:01.360Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/artifactregistry.googleapis.com x-goog-quota-user=projects/fmrep-sveltekit
+[debug] [2023-11-18T15:41:04.455Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudfunctions.googleapis.com 200
+[debug] [2023-11-18T15:41:04.456Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudfunctions.googleapis.com [omitted]
+[info] +  functions: required API cloudfunctions.googleapis.com is enabled 
+[debug] [2023-11-18T15:41:04.984Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/artifactregistry.googleapis.com 200
+[debug] [2023-11-18T15:41:04.984Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/artifactregistry.googleapis.com [omitted]
+[info] +  artifactregistry: required API artifactregistry.googleapis.com is enabled 
+[debug] [2023-11-18T15:41:05.595Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/runtimeconfig.googleapis.com 200
+[debug] [2023-11-18T15:41:05.595Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2023-11-18T15:41:07.157Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudbuild.googleapis.com 200
+[debug] [2023-11-18T15:41:07.158Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/fmrep-sveltekit/services/cloudbuild.googleapis.com [omitted]
+[info] +  functions: required API cloudbuild.googleapis.com is enabled 
+[debug] [2023-11-18T15:41:07.161Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit/adminSdkConfig [none]
+[debug] [2023-11-18T15:41:08.362Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit/adminSdkConfig 200
+[debug] [2023-11-18T15:41:08.363Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit/adminSdkConfig {"projectId":"fmrep-sveltekit","storageBucket":"fmrep-sveltekit.appspot.com","locationId":"europe-west"}
+[debug] [2023-11-18T15:41:08.365Z] >>> [apiv2][query] GET https://runtimeconfig.googleapis.com/v1beta1/projects/fmrep-sveltekit/configs [none]
+[debug] [2023-11-18T15:41:09.295Z] <<< [apiv2][status] GET https://runtimeconfig.googleapis.com/v1beta1/projects/fmrep-sveltekit/configs 200
+[debug] [2023-11-18T15:41:09.295Z] <<< [apiv2][body] GET https://runtimeconfig.googleapis.com/v1beta1/projects/fmrep-sveltekit/configs {}
+[debug] [2023-11-18T15:41:09.300Z] Validating nodejs source
+[debug] [2023-11-18T15:41:13.391Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^4.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.15.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2023-11-18T15:41:13.392Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2023-11-18T15:41:13.395Z] Could not find functions.yaml. Must use http discovery
+[debug] [2023-11-18T15:41:13.420Z] Found firebase-functions binary at 'C:\Users\Monsieur Lukman\Desktop\MD apps\fmrep-frontend\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8485
+
+[debug] [2023-11-18T15:41:14.492Z] Got response from /__/functions.yaml {"endpoints":{"removeUser":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.delete","eventFilters":{"resource":"projects/fmrep-sveltekit/databases/(default)/documents/users/{uid}"},"retry":false},"labels":{},"entryPoint":"removeUser"}},"specVersion":"v1alpha1","requiredAPIs":[]}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\Monsieur Lukman\Desktop\MD apps\fmrep-frontend\functions (76.4 KB) for uploading 
+[debug] [2023-11-18T15:41:14.591Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/-/functions [none]
+[debug] [2023-11-18T15:41:16.758Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/-/functions 200
+[debug] [2023-11-18T15:41:16.759Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/-/functions {"functions":[{"name":"projects/fmrep-sveltekit/locations/us-central1/functions/deleteUser","httpsTrigger":{"url":"https://us-central1-fmrep-sveltekit.cloudfunctions.net/deleteUser","securityLevel":"SECURE_ALWAYS"},"status":"ACTIVE","entryPoint":"deleteUser","timeout":"60s","availableMemoryMb":256,"serviceAccountEmail":"fmrep-sveltekit@appspot.gserviceaccount.com","updateTime":"2023-11-18T13:49:33.001Z","versionId":"3","labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"2563171a237043c3c2a16a4bf431eb9cd8397150"},"sourceUploadUrl":"https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/895a12d2-bf74-4336-8b5d-5320eaf003ab.zip","environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"fmrep-sveltekit\",\"storageBucket\":\"fmrep-sveltekit.appspot.com\",\"locationId\":\"europe-west\"}","GCLOUD_PROJECT":"fmrep-sveltekit","EVENTARC_CLOUD_EVENT_SOURCE":"projects/fmrep-sveltekit/locations/us-central1/functions/deleteUser"},"runtime":"nodejs18","ingressSettings":"ALLOW_ALL","buildId":"c9d75295-3330-440b-8560-6b281909ddba","buildEnvironmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""},"buildName":"projects/213083252573/locations/us-central1/builds/c9d75295-3330-440b-8560-6b281909ddba","dockerRegistry":"ARTIFACT_REGISTRY"}]}
+[debug] [2023-11-18T15:41:16.762Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/fmrep-sveltekit/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2023-11-18T15:41:18.573Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/fmrep-sveltekit/locations/-/functions 200
+[debug] [2023-11-18T15:41:18.573Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/fmrep-sveltekit/locations/-/functions {}
+[debug] [2023-11-18T15:41:18.579Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit [none]
+[debug] [2023-11-18T15:41:19.827Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit 200
+[debug] [2023-11-18T15:41:19.827Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/fmrep-sveltekit {"projectId":"fmrep-sveltekit","projectNumber":"213083252573","displayName":"fmRep-SvelteKit","name":"projects/fmrep-sveltekit","resources":{"hostingSite":"fmrep-sveltekit","storageBucket":"fmrep-sveltekit.appspot.com","locationId":"europe-west"},"state":"ACTIVE","etag":"1_bc74ef2d-2212-4745-8752-6b8ef484b505"}
+[debug] [2023-11-18T15:41:19.832Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2023-11-18T15:41:19.832Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/us-central1/functions:generateUploadUrl {}
+[debug] [2023-11-18T15:41:21.786Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2023-11-18T15:41:21.787Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v1/projects/fmrep-sveltekit/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/852d3371-13d1-4d97-9eab-a3a191673151.zip?GoogleAccessId=service-213083252573@gcf-admin-robot.iam.gserviceaccount.com&Expires=1700323881&Signature=AdQcgN7ZFmuc7k7o%2F4UxMnWegzrEoCA%2BKPT4PhmNMu13Er1957wWht%2BfXIxV%2FF0cuxrkr%2BytT7M0Zc1XU3aaY5Q6nAzacg9tqe6VMi6YdSh7h8hSFxf0eexml54gcNvkSdvyG%2FEaX%2Fh7aBpahPMtM5MstubTzk7dJyIHQ1%2FSkIlKdp7IfC2nFjl8ASzT4sZc3m%2BoeS0xSswSuIu1q%2BAwbI4fwEC%2Fj8cVenk5P7yHAarsTQyJ9SitXg0kC%2BSmcSxKqHLlrflIo%2BZc54Vq%2Fd1d%2BGrgL0b%2BAP%2F729h6Nhvbv0vT3d0OHQiDS9xaXMtU6yCMJvZAk2cwuoEblIclbUURbQ%3D%3D"}
+[debug] [2023-11-18T15:41:21.789Z] >>> [apiv2][query] PUT https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/852d3371-13d1-4d97-9eab-a3a191673151.zip GoogleAccessId=service-213083252573%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1700323881&Signature=AdQcgN7ZFmuc7k7o%2F4UxMnWegzrEoCA%2BKPT4PhmNMu13Er1957wWht%2BfXIxV%2FF0cuxrkr%2BytT7M0Zc1XU3aaY5Q6nAzacg9tqe6VMi6YdSh7h8hSFxf0eexml54gcNvkSdvyG%2FEaX%2Fh7aBpahPMtM5MstubTzk7dJyIHQ1%2FSkIlKdp7IfC2nFjl8ASzT4sZc3m%2BoeS0xSswSuIu1q%2BAwbI4fwEC%2Fj8cVenk5P7yHAarsTQyJ9SitXg0kC%2BSmcSxKqHLlrflIo%2BZc54Vq%2Fd1d%2BGrgL0b%2BAP%2F729h6Nhvbv0vT3d0OHQiDS9xaXMtU6yCMJvZAk2cwuoEblIclbUURbQ%3D%3D
+[debug] [2023-11-18T15:41:21.789Z] >>> [apiv2][body] PUT https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/852d3371-13d1-4d97-9eab-a3a191673151.zip [stream]
+[debug] [2023-11-18T15:41:24.917Z] <<< [apiv2][status] PUT https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/852d3371-13d1-4d97-9eab-a3a191673151.zip 200
+[debug] [2023-11-18T15:41:24.917Z] <<< [apiv2][body] PUT https://storage.googleapis.com/uploads-704450275026.us-central1.cloudfunctions.appspot.com/852d3371-13d1-4d97-9eab-a3a191673151.zip [omitted]
+[info] +  functions: functions folder uploaded successfully 
+[info] 
+The following functions are found in your project but do not exist in your local source code:
+	deleteUser(us-central1)
+
+If you are renaming a function or changing its region, it is recommended that you create the new function first before deleting the old one to prevent event loss. For more info, visit https://firebase.google.com/docs/functions/manage-functions#modify
+

@@ -10,6 +10,7 @@
   let error = null;
 
   export let propertyId = ''; // This should be passed as a prop or obtained in some way
+  export let adminId = ''; // This should be passed as a prop or obtained in some way
   const defaultPassword = 'asdf123'; // Change this to a more secure default password
 
   const createUser = async () => {
@@ -30,6 +31,7 @@
         fullName,
         email,
         propertyId,
+        adminId
       });
 
       console.log('User created successfully!');
