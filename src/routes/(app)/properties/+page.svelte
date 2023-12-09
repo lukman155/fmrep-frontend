@@ -82,8 +82,7 @@ onMount(() => {
 <style>
     .img-con {
     width: 100px;
-    height: auto;
-
+    height: 60px;
   }
 
   img {
@@ -159,22 +158,5 @@ onMount(() => {
     margin-bottom: 1em;
     text-align: left;
   }
-  .row {
-    display: flex;
 
-  }
-
-
-
-  .column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0 2em;
-    height: 1000px;
-  }
-
-  .v-line {
-    border-right: 1px solid rgba(0, 0, 0, 0.1) ;
-  }
 </style>

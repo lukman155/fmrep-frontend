@@ -1,5 +1,6 @@
 <!-- src/components/Announcement.svelte -->
 <script>
+  import { toast } from '@zerodevx/svelte-toast'
   import { onDestroy, onMount } from 'svelte';
   import {
     Timestamp,
@@ -45,6 +46,8 @@
         content,
         createdAt: Timestamp.now(),
       });
+      toast.push('Added Announcement Successfully', { classes: ['toast-success'] });
+
       title = '';
       content = '';
     }
@@ -54,8 +57,12 @@
     try {
       const announcementRef = doc(db, 'announcements', id);
       await deleteDoc(announcementRef);
+      toast.push('Deleted Announcement Successfully', { classes: ['toast-warning'] });
+
     } catch (error) {
       console.error('Error deleting announcement:', error.message);
+      toast.push('Error: Failed to delete announcement', { classes: ['toast-error'] });
+
     }
   };
 
@@ -106,7 +113,6 @@
     {/each}
   </ul>
 </div>
-
 
 <style>
   h3::first-line{

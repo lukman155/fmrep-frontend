@@ -5,7 +5,6 @@
 
 <div class="container">
 
-
   <div class="sidebar">
     <SideMenu />
   </div>
@@ -13,6 +12,7 @@
   <div class="content">
     <slot />
   </div>
+
 
 </div>
 

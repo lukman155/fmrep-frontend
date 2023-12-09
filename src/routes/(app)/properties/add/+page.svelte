@@ -60,7 +60,9 @@
       const propertyId = propertyRef.id;
 
       // Add each asset to Firestore
-
+if (!name && !address) {
+  
+}
       await addAsset(propertyId);
 
       
@@ -85,8 +87,8 @@
 <a href="/properties">Back</a>
 
 <form>
-  <InputField label={'Name'} bind:value={name} />
-  <InputField label={'Address'} bind:value={address} />
+  <InputField label={'Name*'} bind:value={name} />
+  <InputField label={'Address*'} bind:value={address} />
 
 
   <!-- Input field for selecting property image -->

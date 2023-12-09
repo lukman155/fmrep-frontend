@@ -1,7 +1,8 @@
 <script>
+	import { toast } from '@zerodevx/svelte-toast';
   import { onMount } from 'svelte';
   import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-  import { doc, setDoc, getFirestore } from 'firebase/firestore';
+  import { doc, setDoc, getFirestore, Timestamp } from 'firebase/firestore';
   import { auth, db } from '../../../lib/firebase/firebase';
 
   let fullName = '';
@@ -9,7 +10,9 @@
   let isLoading = false;
   let error = null;
 
+
   export let propertyId = ''; // This should be passed as a prop or obtained in some way
+  export let propertyName = ''; // This should be passed as a prop or obtained in some way
   export let adminId = ''; // This should be passed as a prop or obtained in some way
   const defaultPassword = 'asdf123'; // Change this to a more secure default password
 
@@ -31,11 +34,16 @@
         fullName,
         email,
         propertyId,
-        adminId
+        propertyName,
+        adminId,
+        createdAt: Timestamp.now(),
+        uid,
       });
 
       console.log('User created successfully!');
       auth.updateCurrentUser(originalUser);
+      toast.push(`${fullName} created successfully`, { classes: ['toast-success'] });
+      dispatch('refresh');
     } catch (error) {
       console.error('Error creating user:', error.message);
       error = error.message;
@@ -46,7 +54,7 @@
 </script>
 
 <div>
-  <h1>Create Tenant</h1>
+  <h4>Create New Tenant</h4>
   {#if error}
     <p style="color: red;">{error}</p>
   {/if}

@@ -1,10 +1,12 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
+	import ViewTickets from './ViewTickets.svelte';
 	import { auth, db } from './../../../lib/firebase/firebase.js';
   import { getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
   import CreateTenant from './CreateTenant.svelte';
   import ViewTenants from './ViewTenants.svelte';
+  import Tenants from './Tenants.svelte';
 
   export let property;
   export let onClose;
@@ -93,6 +95,11 @@
       </div>
     </div>
 
+    <div class="prop-controls">
+      <button on:click={deleteProperty}>Delete Property</button>
+      <button>Edit Property</button>
+    </div>
+
     <div class="description">
       <p>5 units of 3-bedroom bungalow with BQ and some blah blah blah</p>
     </div>
@@ -127,15 +134,13 @@
     
       {/if}
     
-    
       {#if activeTab == 'Tickets' }
-        <ViewTenants propertyId={property.id} />
+        <ViewTickets propertyId={property.id} /> 
       {/if}
     
       {#if activeTab == 'Tenants' }
         <div class="actions tenants">
-          <button on:click={deleteProperty}>Delete Property</button>
-          <CreateTenant propertyId={property.id} adminId={auth.currentUser.id} />
+        <Tenants propertyId={property.id} propertyName={property.name} />
         </div>
       {/if}
     </div>

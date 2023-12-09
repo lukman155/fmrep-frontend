@@ -1,4 +1,5 @@
 <script>
+	import { doc } from 'firebase/firestore';
   import { onMount } from 'svelte';
   import { getDocs, collection, query, where } from 'firebase/firestore';
   import { db } from '../../../lib/firebase/firebase';
@@ -22,34 +23,26 @@
   };
 
   const deleteTenant = async (userId) => {
-    try {
-      // Replace 'your-function-endpoint' with the actual endpoint URL of your Cloud Function
-      const response = await fetch('https://us-central1-fmrep-sveltekit.cloudfunctions.net/deleteUser?userId=' + userId, {
-        method: 'POST',
-      });
+  try {
+    // Reference to the user document
+    const userDocRef = doc(db, 'users', userId);
 
-      if (response.ok) {
-        console.log('User deleted successfully');
-        // Refresh tenants list or update UI as needed
-      } else {
-        console.error('Error deleting user:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error deleting user:', error.message);
-    }
-  };
+    // Delete the user document
+    await deleteDoc(userDocRef);
 
-  // Example usage of deleteTenant function
-  const handleDelete = async (userId) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-      await deleteTenant(userId);
-      await loadTenants(); // Refresh the tenant list after deletion
-    }
-  };
+    console.log('User deleted successfully');
+    // Refresh tenants list or update UI as needed
+    await loadTenants();
+  } catch (error) {
+    console.error('Error deleting user:', error.message);
+    // Handle error, maybe show a notification to the user
+  }
+};
+
 </script>
 
 <div>
-  <h1>View Tenants</h1>
+  <h1>Tenants</h1>
 
   {#await loadTenants()}
     <p>Loading tenants</p>
@@ -59,7 +52,7 @@
       {#each tenants as tenant (tenant.email)}
         <li>
           <strong>{tenant.fullName}</strong> - {tenant.email}
-          <button on:click={() => handleDelete(tenant.userId)}>Delete</button>
+          <button on:click={() => deleteTenant(tenant.userId)}>Delete</button>
         </li>
       {/each}
     </ul>
