@@ -1,8 +1,39 @@
 <!-- TicketDetails.svelte -->
 <script>
+	import { statusOptions } from './add/options.js';
+	import { toast } from '@zerodevx/svelte-toast';
+  import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+  import { db } from '../../../lib/firebase/firebase';
+  import { createEventDispatcher, onMount, tick } from 'svelte';
 
+
+  
   export let ticket;
   export let show;
+
+  let selectedStatus;
+
+
+// Update status
+async function updateStatus() {
+  const ticketRef = doc(db, "tickets", ticket.id);
+  const updatedData = {
+    status: selectedStatus // updated status
+  };
+  await updateDoc(ticketRef, updatedData);
+  // Show success toast
+
+}
+
+
+// Call on status select change  
+function handleStatusChange() {
+  selectedStatus = this.value;
+  updateStatus();
+  toast.push(`Status updated to ${selectedStatus}!`);
+
+}
+
 
   function close() {
     show = false;
@@ -13,6 +44,16 @@
       close();
     }
   }
+  const dispatch = createEventDispatcher();
+  async function deleteTicket() {
+    const ticketRef = doc(db, 'tickets', ticket.id);
+    await deleteDoc(ticketRef);
+    show = false; // close modal
+    toast.push('Deleted Ticket Successfully', {classes:['toast-warning']})
+    dispatch('delete-ticket', {id: ticket.id})
+  } 
+
+
 </script>
 {#if show}
   <div class="modal-container" on:click={overlayClick}>
@@ -28,9 +69,7 @@
 
 
         <div class="tags">
-          <span class="badge {ticket.data.status || 'No Status'}">
-            {ticket.data.status || 'No Status'}
-          </span>
+
           <h3>Category:</h3>
           <p>{ticket.data.category || 'No Category'}</p>
           <h3>Priority:</h3>
@@ -40,8 +79,23 @@
         </div>
       </div>
       <hr>
-      <p>Submitted by {ticket.data.tenant_email || 'Unknown Tenant'}</p>
+      <div class="status-con">
+
+        <label for="status">
+          <p>Select Status:</p>
+          <select on:change={handleStatusChange} bind:value={ticket.data.status}>
+            {#each statusOptions as option}
+              <option value={option}>{option}</option>
+            {/each}  
+          </select>
+        </label>
+      </div>
+      
     </div>
+    <p>Submitted by {ticket.data.tenant_email || 'Unknown Tenant'}</p>
+    <button on:click={deleteTicket}>
+      Delete Ticket
+    </button>
   </div>
 </div>
 {/if}
@@ -73,11 +127,7 @@
 
 
   .details > .main {
-    flex: 1 1 80%;
-  }
-
-  .details > .tags {
-    flex: 1 1 20%;
+    
   }
 
   .modal-container {
@@ -114,7 +164,7 @@
     margin-top: 20px;
     display: flex;
     justify-content: center;
-    gap: 20em;
+    gap: 2em;
   }
 
   h3 {

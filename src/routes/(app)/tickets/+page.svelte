@@ -89,6 +89,16 @@
     return getTickets(allTicketsRef, startAfterDoc, ticketsPerPage);
   };
 
+  const handleDispatch = async() => {
+
+    isAdmin = await checkAdminStatus();
+    uid = auth.currentUser.uid;
+
+    const data = await (isAdmin ? getAllTickets : getUserTickets)(null, ticketsPerPage);
+    ticket_data = data.tickets
+    startAfterDoc = data.startAfterDoc
+  }
+
   onMount(async () => {
     // Check admin status
     isAdmin = await checkAdminStatus();
@@ -97,13 +107,12 @@
     const data = await (isAdmin ? getAllTickets : getUserTickets)(null, ticketsPerPage);
     ticket_data = data.tickets
     startAfterDoc = data.startAfterDoc
-    console.log(startAfterDoc)
   });
 </script>
 
 
 <section>
-<TicketDetails ticket = {selectedTicket} show={showModal} />
+<TicketDetails on:delete-ticket={handleDispatch} ticket = {selectedTicket} show={showModal} />
   <div class="title">
     <h1>Tickets</h1>
     <p>Manage all your Properties Maintenance Tickets</p>
@@ -153,7 +162,7 @@
           No Issue
         {/if}
         <br>
-        <span class="submit-badge truncated">Submitted by {ticket.data.tenant_email}</span>
+        <span class="submit-badge truncated">by {ticket.data.tenant_email}</span>
       </p>
     </td>
     <td class="truncated">{ticket.data.address || 'No Address'}</td>
