@@ -129,25 +129,11 @@
   <table>
       <thead>
           <tr>
-              <th>Tickets</th>
-              <th>Address</th>
-              <th>Category</th>
-              <select bind:value={filterPriority}>
-                <option value="">Priority</option>
-                <option value="High">High</option>
-                <option value="Medium">Medium</option>
-                <option value="Low">Low</option>
-              </select>
-              <th>
-                <select bind:value={filterStatus}>
-                <option value="">Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Canceled">Canceled</option>
-              </select>
-            </th>
-            <th>Created At</th>
+            <th>Tickets</th>
+            <th>Address</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Created on</th>
           </tr>
       </thead>
       <tbody>
@@ -167,7 +153,6 @@
     </td>
     <td class="truncated">{ticket.data.address || 'No Address'}</td>
     <td class="truncated">{ticket.data.category || 'No Category'}</td>
-    <td class="truncated">{ticket.data.priority || 'No Priority'}</td>
     <td class="truncated">{ticket.data.status || 'No Status'}</td>
     <td>
       {new Date(ticket.data.createdAt.toDate()).toLocaleTimeString('en-US', { 

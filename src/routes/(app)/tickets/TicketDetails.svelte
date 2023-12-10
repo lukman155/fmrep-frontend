@@ -25,6 +25,18 @@ async function updateStatus() {
 
 }
 
+async function updateStatusAndRemarks() {
+    const ticketRef = doc(db, "tickets", ticket.id);
+    const updatedData = {
+      status: ticket.data.status,
+      adminRemarks: ticket.data.adminRemarks,
+    };
+    await updateDoc(ticketRef, updatedData);
+    // Show success toast
+    toast.push(`Status and remarks updated successfully!`);
+  }
+
+  
 
 // Call on status select change  
 function handleStatusChange() {
@@ -80,15 +92,27 @@ function handleStatusChange() {
       </div>
       <hr>
       <div class="status-con">
-
         <label for="status">
           <p>Select Status:</p>
-          <select on:change={handleStatusChange} bind:value={ticket.data.status}>
+          <select bind:value={ticket.data.status}>
             {#each statusOptions as option}
               <option value={option}>{option}</option>
-            {/each}  
+            {/each}
           </select>
         </label>
+        <!-- Add a textarea for administrator remarks -->
+        <label for="adminRemarks">
+          <p>Administrator Remarks:</p>
+          <textarea id="adminRemarks" bind:value={ticket.data.adminRemarks}></textarea>
+        </label>
+        <!-- Add a submit button for updating both status and remarks -->
+        <button on:click={updateStatusAndRemarks}>Submit</button>
+      
+        <div class="remarks-section">
+          <h3>Administrator Remarks:</h3>
+          <p>{ticket.data.adminRemarks || 'No remarks available'}</p>
+        </div>
+      
       </div>
       
     </div>
