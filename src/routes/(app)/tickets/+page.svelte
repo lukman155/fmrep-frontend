@@ -138,6 +138,7 @@
                 <option value="Canceled">Canceled</option>
               </select>
             </th>
+            <th>Created At</th>
           </tr>
       </thead>
       <tbody>
@@ -159,6 +160,14 @@
     <td class="truncated">{ticket.data.category || 'No Category'}</td>
     <td class="truncated">{ticket.data.priority || 'No Priority'}</td>
     <td class="truncated">{ticket.data.status || 'No Status'}</td>
+    <td>
+      {new Date(ticket.data.createdAt.toDate()).toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })} -
+      {new Date(ticket.data.createdAt.toDate()).toLocaleDateString()}
+      </td>
   </tr>
 {/each}
       </tbody>

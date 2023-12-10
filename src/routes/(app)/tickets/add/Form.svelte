@@ -4,9 +4,7 @@
 	import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
 	import { getDocs } from 'firebase/firestore';
 	import { query } from 'firebase/firestore';
-	import Button from './../../../../lib/components/Button.svelte';
   import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
-  import { userAuth } from '../../../../store/authStore';
   import { auth, db } from '../../../../lib/firebase/firebase';
 
   export let active_step;
@@ -35,8 +33,6 @@
     tenant_email: auth.currentUser.email,
   };
 
-  console.log(docData);
-
   try {
     uploading = true;
 
@@ -61,23 +57,32 @@
 
   <label>Select a Maintenance Category:
     <div class="cat-con">
-    {#each maintenanceCategories as { category, src }}
-      <div class="cat-tile">
-        <input type="radio" id={category} name="category" bind:group={selectedCategory} value={category} class:selected={selectedCategory === category} required>
-        <label for={category}>
-          <img src=/{src} alt={category}>
-          <p>{category}</p>
-        </label>
-      </div>
-    {/each}
-  </div>
+      {#each maintenanceCategories as { category, src }}
+        <div class="cat-tile">
+          <input
+            type="radio"
+            id={category}
+            name="category"
+            bind:group={selectedCategory}
+            value={category}
+            class:selected={selectedCategory === category}
+            required
+          >
+          <label for={category}>
+            <img src=/{src} alt={category}>
+            <p>{category}</p>
+          </label>
+        </div>
+      {/each}
+    </div>
+    
   </label>
 
 	{:else if active_step == 'Details'}
   <div class="details-step">
 
-    <InputField label={'Issue'} bind:value={formData.issue} />
-    <InputField label={'Address'} bind:value={formData.address} />
+    <InputField label={'Issue*'} bind:value={formData.issue} required/>
+    <InputField label={'Address*'} bind:value={formData.address} required/>
 
     <TextArea label={'Description'} bind:value={formData.description}/>
 
@@ -109,7 +114,7 @@
 
   </div>
 
-    {:else if active_step == 'Confirmation'}
+  {:else if active_step == 'Confirmation'}
 
 		<div class="con-step">
       <p>Please take a moment to review your ticket details before submitting.</p>
@@ -121,9 +126,25 @@
         <p><strong>Description:</strong> {formData.description}</p>
         <p><strong>Priority:</strong> {formData.priority}</p>
         <p><strong>Status:</strong>{formData.status}</p>
-    </div>
+      </div>
       <div class="submit-btn">
-        <Button color='green' bg-color='' text='Submit Ticket' clickHandler={()=>{}} />
+        {#if selectedCategory && formData.issue.trim() !== '' && formData.address.trim() !== ''}
+          <!-- Enable the button only when a category is selected, and issue and address have text -->
+          
+          <button  on:click={newProp}>Submit Ticket</button>
+        {:else}
+          <!-- Disable the button and show a message when conditions are not met -->
+          <div>
+            <p style="color: red;">
+              {#if selectedCategory}
+                Please enter text in both the issue and address fields before submitting.
+              {:else}
+                Please select a maintenance category before submitting.
+              {/if}
+            </p>
+            <button  on:click={newProp} disabled>Submit Ticket</button>
+          </div>
+        {/if}
       </div>
 		</div>
 
@@ -131,6 +152,42 @@
 </form>
 
   <style>
+
+    .submit-btn > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1em;
+    }
+
+    .submit-btn button {
+
+    padding: 10px 20px;
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    
+  }
+
+  .submit-btn button:hover {
+    color: rgb(30, 63, 29);
+    border: 2px solid #499c4881;
+    transform: scale(1.05);
+  }
+
+  .submit-btn button:disabled {
+  /* Styles for disabled buttons */
+  opacity: 0.5;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.submit-btn button:disabled:hover {
+    transform: scale(1);
+  }
 
     .details-card > p {
       margin-bottom: 1em;

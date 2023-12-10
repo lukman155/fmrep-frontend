@@ -81,8 +81,8 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="modal-con">
-<div class="modal" on:click={closeModal}>
+<div class="modal-con" on:click={closeModal}>
+<div class="modal" >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="modal-content" on:click={(event) => event.stopPropagation()}>
@@ -160,20 +160,19 @@
   
 
   .modal-con {
-    display: block;
-    position: fixed;
+    display: flex;
+    position: absolute;
     left: 0;
     top: 0;
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.7);
     width: 100%;
-    height: 100%;
   }
 
   .modal {
     width: 100%;
     height: 100%;
-    max-width: 700px;
+    max-width: 800px;
     overflow: auto;
     margin: 0 auto;
   }
@@ -219,6 +218,7 @@ color: white;
     border-radius: 30px;
     width: 90%;
     text-align: center;
+    padding-bottom: 2em;
   }
 
   .close {
