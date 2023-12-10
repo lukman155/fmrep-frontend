@@ -58,7 +58,7 @@
   };
 
   let menuItems = [
-    { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
+    // { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
     { text: 'Properties', link: 'properties', icon: 'fa-house' },
     { text: 'Announcements', link: 'announcements', icon: 'fa-bell' },
     { text: 'Tickets', link: 'tickets', icon: 'fa-ticket' },

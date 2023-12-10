@@ -89,15 +89,6 @@
 
 
     <div class="side">
-
-      <label for="priority">
-        <p>Select Priority:</p>
-        <select id="priority" bind:value={formData.priority}>
-          {#each priorityOptions as option (option)}
-            <option value={option}>{option}</option>
-          {/each}
-        </select>
-      </label>
       
       <label for="status">
         <p>Select Status:</p>

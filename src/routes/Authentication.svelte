@@ -42,7 +42,7 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         $userAuth = userCredential.user;
         document.cookie = `isLoggedIn=true; max-age=3600`;
-        goto('/dashboard');
+        goto('/tickets');
       toast.push('Logged in', { classes: ['toast-success'] });
 
       } else {

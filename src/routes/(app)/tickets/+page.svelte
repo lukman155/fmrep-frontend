@@ -179,6 +179,19 @@
 
 <style>
 
+  section {
+    min-height: 90%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .pagination {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    gap: 3em;
+  }
+
 .truncated {
     max-width: 200px; /* Adjust the maximum width as needed */
     overflow: hidden;
