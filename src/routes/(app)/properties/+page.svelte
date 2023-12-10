@@ -1,6 +1,6 @@
 <script>
 
-  import { collection, getDocs } from "firebase/firestore";
+  import { collection, getDocs, query, where } from "firebase/firestore";
   import { onMount } from "svelte";
   import { db } from "../../../lib/firebase/firebase";
   import Link from "../../../lib/components/Link.svelte";
@@ -20,6 +20,12 @@ const fetchProperties = async () => {
   }
 };
 
+const loadTenants = async (propertyId) => {
+  const q = query(collection(db, 'users'), where('propertyId', '==', propertyId));
+  const snapshot = await getDocs(q);
+  return snapshot.size; // return number of docs
+}
+
 onMount(() => {
   fetchProperties();
 });
@@ -38,6 +44,7 @@ onMount(() => {
   <PropertyModal
     property={selectedProperty}
     onClose={() => selectedProperty = null}
+    on:refresh={() => fetchProperties()}
   />
 {/if}
 
@@ -70,7 +77,13 @@ onMount(() => {
               <span class="submit-badge">{property.address}</span>
             </p>
           </td>
-          <td>23</td>
+          <td>
+            {#await loadTenants(property.id)}
+              <span>Loading...</span>  
+            {:then numTenants}
+              {numTenants}
+            {/await}
+          </td>
         </tr>
       {/each}
     </tbody>

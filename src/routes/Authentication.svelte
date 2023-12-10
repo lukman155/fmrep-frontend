@@ -4,7 +4,7 @@
   import { userAuth } from "../store/authStore";
   import { Timestamp, doc, setDoc } from "firebase/firestore";
   import { db } from "../lib/firebase/firebase";
-
+  import { SvelteToast, toast } from '@zerodevx/svelte-toast'
 
   let email = '';
   let password = '';
@@ -43,6 +43,8 @@
         $userAuth = userCredential.user;
         document.cookie = `isLoggedIn=true; max-age=3600`;
         goto('/dashboard');
+      toast.push('Logged in', { classes: ['toast-success'] });
+
       } else {
         if (isAdmin) {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -65,6 +67,8 @@
           $userAuth = userCredential.user;
           document.cookie = `isLoggedIn=true; max-age=3600`;
           goto('/dashboard');
+          toast.push('Registered Account Successfully', { classes: ['toast-success'] });
+
         }
       }
       authenticating = false;

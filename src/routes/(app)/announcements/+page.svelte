@@ -93,8 +93,8 @@
 
   {#if isAdmin}
   <form on:submit={addAnnouncement}>
-    <InputField bind:value={title} label='Title' />
-    <TextArea bind:value={content} label='Content'/>
+    <InputField bind:value={title} label='Title*' />
+    <TextArea bind:value={content} label='Content*'/>
     <button type="submit">Add Announcement</button>
   </form>
   {/if}

@@ -1,19 +1,23 @@
 <script>
 	export let value, id, label, type = 'text';
+  export let required = false;
 	
 	function typeAction(node){
 		node.type = type;
 	}
+
+  $: hasError = required && !value; 
+
 </script>
 
 
 <label>
   <p class={value?'above':'center'}>{label}</p>
-	<input use:typeAction class="input" bind:value={value} placeholder={value} {id}/>
+	<input use:typeAction class="input" bind:value={value} 
+  placeholder={value} 
+  {id} 
+  {required} aria-invalid={hasError}/>
 </label>
-
-
-
 
 <style>
 	

@@ -10,7 +10,7 @@
     unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
       isLoggedIn.update(() => true);
-      toast.push('Logged in', { classes: ['toast-success'] });
+      // toast.push('Logged in', { classes: ['toast-success'] });
       console.log('logged in')
 
       userAuth.set({

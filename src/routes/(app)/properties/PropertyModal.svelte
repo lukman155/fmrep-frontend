@@ -1,12 +1,13 @@
 <!-- PropertyDetailsModal.svelte -->
 
 <script>
+	import { toast } from '@zerodevx/svelte-toast';
 	import ViewTickets from './ViewTickets.svelte';
 	import { auth, db } from './../../../lib/firebase/firebase.js';
   import { getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
-  import CreateTenant from './CreateTenant.svelte';
-  import ViewTenants from './ViewTenants.svelte';
   import Tenants from './Tenants.svelte';
+  import {createEventDispatcher} from 'svelte';
+
 
   export let property;
   export let onClose;
@@ -19,6 +20,9 @@
   const closeModal = () => {
     onClose();
   };
+
+
+  const dispatch = createEventDispatcher();
 
   const deleteProperty = async () => {
     try {
@@ -50,7 +54,8 @@
 
       console.log('Property and associated entities deleted successfully!');
       closeModal();
-      location.reload();
+      toast.push(`Deleted property - ${property.name} and all associated tenants`, { classes: ['toast-warning'] });
+      dispatch('refresh');
     } catch (error) {
       console.error('Error deleting property:', error.message);
     }
@@ -76,6 +81,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="modal-con">
 <div class="modal" on:click={closeModal}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -147,8 +153,30 @@
     
   </div>
 </div>
+</div>
 
 <style>
+
+  
+
+  .modal-con {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height: 100%;
+  }
+
+  .modal {
+    width: 100%;
+    height: 100%;
+    max-width: 700px;
+    overflow: auto;
+    margin: 0 auto;
+  }
 
 .description {
   padding: 1em;
@@ -178,22 +206,6 @@ color: white;
 
   p {
     margin: 0;
-  }
-  .sub-con {
-    margin-top: 1em;
-    display: flex;
-    padding: 1em;
-  }
-  .modal {
-    display: block;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
   }
 
   .modal-content {

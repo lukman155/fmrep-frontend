@@ -1,17 +1,23 @@
 <script>
+	import { toast } from '@zerodevx/svelte-toast';
+	import { goto } from '$app/navigation';
+	import { auth } from './../../../../lib/firebase/firebase.js';
 	import AddAssetForm from './AddAssetForm.svelte';
 	import { addAsset } from './AddAssetForm.svelte';
 	import InputField from './../../../../lib/components/InputField.svelte';
-  import { onMount } from 'svelte';
   import { addDoc, collection, Timestamp } from "firebase/firestore";
   import { db, storage } from "../../../../lib/firebase/firebase";
   import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
   let name = "";
   let address = "";
+  let description = "5 units of 3-bedroom bungalow with BQ and some blah blah blah";
   let propertyImageFile = null;
   let loading = false;
   let error = false;
+  let adminId;
+
+
 
   // Fields for adding assets
   let assets = [{ id: 0, name: "", description: "", imageFiles: [] }]; // Initial array with one empty asset
@@ -23,21 +29,13 @@
     }
   };
 
-  const handleAssetImageChange = (event, assetId) => {
-    const file = event.target.files[0];
-    if (file) {
-      assets = assets.map(asset => {
-        if (asset.id === assetId) {
-          return { ...asset, imageFiles: [...asset.imageFiles, file] };
-        }
-        return asset;
-      });
-      assets = assets
-    }
-  };
-
   const addPropertyAndAssets = async () => {
+    if(!name || !address) {
+    alert('Name and address required');
+    return; 
+  }
     try {
+      
       loading = true;
 
       // Upload the property image to Firebase Storage
@@ -47,38 +45,38 @@
         await uploadBytes(propertyImageRef, propertyImageFile);
         propertyImageUrl = await getDownloadURL(propertyImageRef);
       }
+      adminId = auth.currentUser.uid;
+
 
       // Add property data to Firestore
       const propertyData = {
         name: name,
         address: address,
+        description: description,
         imageUrl: propertyImageUrl,
         createdAt: Timestamp.now(),
+        adminId,
       };
 
       const propertyRef = await addDoc(collection(db, "properties"), propertyData);
       const propertyId = propertyRef.id;
 
       // Add each asset to Firestore
-if (!name && !address) {
-  
-}
-      await addAsset(propertyId);
 
-      
+      await addAsset(propertyId)
       loading = false;
+      goto('/properties')
+
+      toast.push('Property created successfully', {classes:['toast-success']})
       // Additional actions after adding property and assets
     } catch (error) {
+      toast.push('Error: Property not created', { classes: ['toast-error'] });
       console.error("Error adding property and assets:", error.message);
       loading = false;
       error = true;
     }
   };
 
-  const addAnotherAsset = () => {
-    assets = assets.map(asset => ({ ...asset })); // Deep copy the array
-    assets.push({ id: assets.length, name: "", description: "", imageFiles: [] });
-  };
 </script>
 
 
@@ -86,37 +84,16 @@ if (!name && !address) {
 
 <a href="/properties">Back</a>
 
-<form>
-  <InputField label={'Name*'} bind:value={name} />
-  <InputField label={'Address*'} bind:value={address} />
 
+<form>
+  <InputField label={'Name*'} bind:value={name} required />
+  <InputField label={'Address*'} bind:value={address} required />
+  <InputField label={'Description'} bind:value={description} />
 
   <!-- Input field for selecting property image -->
   <label for="propertyImageInput">Select Property Image:</label>
   <input type="file" id="propertyImageInput" accept="image/*" on:change={handlePropertyImageChange} class="file-input" />
 
-  <!-- Fields for adding assets -->
-  <!-- {#each assets as asset (asset.id)}
-    <div class="asset-container">
-      <InputField id={`assetName${asset.id}`} label={'Asset Name'} bind:value={asset.name} />
-      <TextArea id={`assetDescription${asset.id}`} label={'Asset Description'} bind:value={asset.description}/>
-
-      
-      <label for={`assetImageInput${asset.id}`}>Select Asset Images:</label>
-      <input type="file" id={`assetImageInput${asset.id}`} accept="image/*" multiple on:change={(e) => handleAssetImageChange(e, asset.id)} class="file-input" />
-
-      
-      {#each asset.imageFiles as image (image)}
-        <div class="asset">
-          <img src={URL.createObjectURL(image)} alt="Asset" />
-        </div>
-      {/each}
-
-      {#if asset.id === assets.length - 1}
-        <button type="button" on:click={addAnotherAsset}>Add Another Asset</button>
-      {/if}
-    </div> 
-  {/each}  -->
 
   <AddAssetForm ></AddAssetForm>
 
