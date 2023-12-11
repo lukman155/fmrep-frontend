@@ -41,20 +41,6 @@ import InputField from './../../../lib/components/InputField.svelte';
         <!-- Add more FAQs as needed -->
       </ul>
     </section>
-
-    <section>
-      <h2>Submit a Support Ticket</h2>
-      <p>If you couldn't find the answer to your question in the FAQs, you can submit a support ticket below:</p>
-      <form action="/submit-ticket" method="post">
-        <!-- Add form fields for name, email, subject, and message -->
-        <InputField label={'Name*'} bind:value={name} required />
-        <InputField label={'Email*'} bind:value={email} required />
-        <InputField label={'Subject'} bind:value={subject} />
-        <TextArea label={'Message*'} bind:value={message} />
-
-        <button type="submit">Submit Ticket</button>
-      </form>
-    </section>
   </main>
 
   <footer>
@@ -63,12 +49,7 @@ import InputField from './../../../lib/components/InputField.svelte';
 
   <style>
 
-    form {
-      display: flex;
-      flex-direction: column;
-      padding: 1em;
 
-    }
 
     header {
       background-color: white;
@@ -107,6 +88,6 @@ import InputField from './../../../lib/components/InputField.svelte';
       text-align: center;
       padding: 1em;
     
-      width: 100%;
+
     }
   </style>

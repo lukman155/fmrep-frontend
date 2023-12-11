@@ -86,6 +86,8 @@ function handleStatusChange() {
           <p>{ticket.data.category || 'No Category'}</p>
           <h3>Priority:</h3>
           <p>{ticket.data.priority || 'No Priority'}</p>
+          <h3>Property:</h3>
+          <p>{ticket.data.propertyName || 'No Address'}</p>
           <h3>Address:</h3>
           <p>{ticket.data.address || 'No Address'}</p>
         </div>

@@ -1,56 +1,67 @@
 <script>
-	import TextArea from './../../../../lib/components/TextArea.svelte';
-	import InputField from './../../../../lib/components/InputField.svelte';
-	import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
-	import { getDocs } from 'firebase/firestore';
-	import { query } from 'firebase/firestore';
-  import { Timestamp, addDoc, collection, doc, setDoc } from 'firebase/firestore';
+  import TextArea from './../../../../lib/components/TextArea.svelte';
+  import InputField from './../../../../lib/components/InputField.svelte';
+  import { maintenanceCategories, statusOptions, priorityOptions } from './options.js';
+  import { Timestamp, addDoc, collection, doc, setDoc, getDoc } from 'firebase/firestore';
   import { auth, db } from '../../../../lib/firebase/firebase';
 
   export let active_step;
 
   let selectedCategory = '';
-  let uploading = false
+  let uploading = false;
 
-	let formData = {
+  let formData = {
     issue: ''.toLowerCase(),
     address: ''.toLowerCase(),
     description: ''.toLowerCase(),
     status: 'Pending'.toLowerCase(),
     priority: 'Low'.toLowerCase(),
     category: selectedCategory.toLowerCase(),
-	}
-
-  const newProp = async () => {
-  if (uploading) {
-    return;
-  }
-
-  const docData = {
-    ...formData,
-    createdAt: Timestamp.now(),
-    tenant_uid: auth.currentUser.uid,
-    tenant_email: auth.currentUser.email,
   };
 
-  try {
-    uploading = true;
+  const newProp = async () => {
+    if (uploading) {
+      return;
+    }
 
-    // Reference to the 'tickets' collection with automatic document ID generation
-    const ticketsRef = collection(db, 'tickets');
+    try {
+      uploading = true;
 
-    // Use addDoc for automatic document ID generation
-    const newTicketRef = await addDoc(ticketsRef, docData);
+      // Fetch user data based on UID
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDocSnapshot = await getDoc(userDocRef);
 
-    console.log('Document written with ID:', newTicketRef.id);
-    uploading = false;
-    history.back();
-  } catch (error) {
-    console.error('Error adding document:', error.message);
-  }
-};
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
 
+        // Include user data in the ticket document
+        const docData = {
+          ...formData,
+          createdAt: Timestamp.now(),
+          tenant_uid: auth.currentUser.uid,
+          tenant_email: auth.currentUser.email,
+          propertyId: userData.propertyId,
+          propertyName: userData.propertyName,     
+        };
+
+        // Reference to the 'tickets' collection with automatic document ID generation
+        const ticketsRef = collection(db, 'tickets');
+
+        // Use addDoc for automatic document ID generation
+        const newTicketRef = await addDoc(ticketsRef, docData);
+
+        console.log('Document written with ID:', newTicketRef.id);
+        uploading = false;
+        history.back();
+      } else {
+        console.error('User document not found');
+      }
+    } catch (error) {
+      console.error('Error adding document:', error.message);
+    }
+  };
 </script>
+
 <form class="form-container" on:submit={newProp}>
 	
   {#if active_step == 'Category'}

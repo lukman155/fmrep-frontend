@@ -7,6 +7,9 @@
   import { getDocs, collection, query, where, deleteDoc, doc } from 'firebase/firestore';
   import Tenants from './Tenants.svelte';
   import {createEventDispatcher} from 'svelte';
+  import Assets from './Assets.svelte';
+
+// Delete asset function
 
 
   export let property;
@@ -16,6 +19,13 @@
   let activeTab = tabs[0];
 
   let propertyAssets = [];
+
+
+  let showConfirm = false;
+
+  function confirmDelete() {
+    showConfirm = true; 
+  }
 
   const closeModal = () => {
     onClose();
@@ -66,12 +76,26 @@
   const fetchAssociatedAssets = async () => {
     try {
       const assetsSnapshot = await getDocs(query(collection(db, 'assets'), where('propertyId', '==', property.id)));
-      propertyAssets = assetsSnapshot.docs.map(doc => doc.data());
+      propertyAssets = assetsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
       console.log(propertyAssets)
     } catch (error) {
       console.error('Error fetching associated assets:', error.message);
     }
   };
+
+  async function deleteAsset(asset) {
+
+  const assetDocRef = await doc(db, 'assets', asset.id);
+  
+  await deleteDoc(assetDocRef);
+
+// Filter out deleted asset
+propertyAssets = propertyAssets.filter(a => a.id !== asset.id);
+
+}
 
   // Call fetchAssociatedAssets when the property changes
   $: if (property && property.id) {
@@ -102,8 +126,26 @@
     </div>
 
     <div class="prop-controls">
-      <button on:click={deleteProperty}>Delete Property</button>
-      <button>Edit Property</button>
+
+      <button on:click={confirmDelete}>
+        Delete Property
+      </button>
+    
+      {#if showConfirm}
+    
+        <div class="confirm">
+    
+          <p>Are you sure you want to delete this property?</p>
+    
+          <div>
+            <button on:click={deleteProperty}>Yes, delete</button>
+            <button on:click={() => showConfirm = false}>Cancel</button>  
+          </div>
+    
+        </div>
+    
+      {/if}
+    
     </div>
 
     <div class="description">
@@ -122,21 +164,7 @@
     <div class="tab-content">
       {#if activeTab == 'Assets'}
 
-        <div class="assets">
-          {#each propertyAssets as asset, index (index)}
-            <div class="asset-details">
-              <h5>{asset.name}</h5>
-              {#if asset.imageUrls && asset.imageUrls.length > 0}
-                {#each asset.imageUrls as imageUrl}
-                  <img src={imageUrl} alt="Asset" class="asset-image">
-                {/each}
-              {:else}
-                <div class="default-image">No Image Available</div>
-              {/if}
-                <p>{asset.description}</p>
-            </div>
-          {/each}
-        </div>
+      <Assets property={property} {propertyAssets} ></Assets>
     
       {/if}
     
@@ -156,6 +184,31 @@
 </div>
 
 <style>
+
+  .tab-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+.confirm { background: #fff; border: 1px solid #ddd; padding: 20px; text-align: center; } 
+
+button {
+  margin-top: 1em;
+  background: none;
+  border: none;
+  color: #f76565;
+  font-size: 14px;
+  border: 1px solid #f76565;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+button:hover {
+  cursor: pointer;
+  color: white;
+  background-color: #f76565;
+}
 
   
 
@@ -233,8 +286,6 @@ color: white;
     line-height: 50%;
     border-radius: 25px;
     padding: .1em .3em;
-
-
   }
 
   .close:hover,
@@ -291,5 +342,8 @@ color: white;
   .active:hover {
     border-bottom: 2px solid #4A9C48;
   }
+
+  .assets { max-width: 600px; margin: 0 auto; } .asset { display: flex; align-items: center; padding: 20px 0; border-bottom: 1px solid #eee; } .details { flex: 3; } .name { margin-top: 0; } .image { flex: 1; margin-left: 20px; } .image img { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; }
+
 
 </style>

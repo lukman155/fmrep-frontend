@@ -1,28 +1,28 @@
 <script>
-  import { collection, getCountFromServer, query, where } from "firebase/firestore";
+  import { collection, query, where, getDocs } from "firebase/firestore";
   import { auth, db } from "../../../lib/firebase/firebase";
   import { checkAdminStatus } from "../../../lib/helper";
 
+  let ticketRef = collection(db, 'tickets');
 
-  let ticketRef = collection(db, 'tickets' )
+  // Function to get the count of tickets based on status
+  async function getCountByStatus(status, ref = ticketRef) {
+    const isAdmin = await checkAdminStatus();
+    let q;
 
-// Function to get the count of tickets based on status
-async function getCountByStatus(status, ref = ticketRef) {
-  const isAdmin = await checkAdminStatus(); // Assuming you have a function to check admin status
-  let q;
+    if (isAdmin) {
+      // Admin can get count for all tickets
+      q = status ? query(ref, where("status", "==", status)) : query(ref);
+    } else {
+      // Regular user gets count for their own tickets
+      const currentUser = auth.currentUser;
+      q = status ? query(ref, where("tenant_uid", "==", currentUser.uid), where("status", "==", status)): query(ref, where("tenant_uid", "==", currentUser.uid));
+    }
 
-  if (isAdmin) {
-    // Admin can get count for all tickets
-    q = status ? query(ref, where("status", "==", status)) : query(ref);
-  } else {
-    // Regular user gets count for their own tickets
-    const currentUser = auth.currentUser;
-    q = query(ref, where("tenant_uid", "==", currentUser.uid), where("status", "==", status));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.size;
   }
 
-  const totalTickets = await getCountFromServer(q);
-  return totalTickets.data().count;
-}
   // Array of metrics with their corresponding labels, queries, and state classes
   let metrics = [
     { label: "Tickets", query: async () => getCountByStatus(), stateClass: "" },
@@ -33,23 +33,19 @@ async function getCountByStatus(status, ref = ticketRef) {
   ];
 </script>
 
-
 {#each metrics as { label, query, stateClass }}
   {#await query()}
     <span class="badge {stateClass}">
       {label}
     </span>
-      {:then num}
-    <span class="badge {stateClass}">
-      {label}
-        {#if num != 'pine'}
-          : {num}
-        {/if}
-    </span>
+  {:then num}
+    {#if num !== 'pine'}
+      <span class="badge {stateClass}">
+        {label}: {num}
+      </span>
+    {/if}
   {/await}
 {/each}
-
-
 
 <style>
   .badge {

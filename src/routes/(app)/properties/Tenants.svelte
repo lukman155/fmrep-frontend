@@ -6,6 +6,7 @@
   
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast';
+  import InputField from '../../../lib/components/InputField.svelte';
 
   export let propertyId;
   export let propertyName;
@@ -91,9 +92,11 @@
 <div>
 
   <div>
-    <input bind:value={fullName} placeholder="Name">
-    <input bind:value={email} placeholder="Email">
-
+    <div>
+      <InputField label={'Name'} bind:value={fullName}/>
+      <InputField label={'Email'} bind:value={email}/>
+      <InputField label={'Password'} bind:value={defaultPassword}/>
+    </div>
     <button on:click={createTenant}>
       Add Tenant 
     </button>
@@ -120,3 +123,30 @@
   {/await}
 
 </div>
+
+<style>
+  button {
+	box-shadow:inset 0px 1px 3px 0px #91b8b3;
+	background:linear-gradient(to bottom, #768d87 5%, #6c7c7c 100%);
+	background-color:#768d87;
+	border-radius:5px;
+	border:1px solid #566963;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:4px 8px;
+	text-decoration:none;
+	text-shadow:0px -1px 0px #2b665e;
+}
+button:hover {
+	background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+	background-color:#6c7c7c;
+}
+button:active {
+	position:relative;
+	top:1px;
+}
+</style>

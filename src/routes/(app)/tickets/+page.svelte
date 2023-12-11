@@ -1,5 +1,5 @@
 <script>
-	import { collection, getDocs, orderBy, query, where, limit, startAfter, } from 'firebase/firestore';
+	import { collection, getDocs, orderBy, query, where, limit, startAfter, doc, getDoc, } from 'firebase/firestore';
   import { checkAdminStatus  } from './../../../lib/helper.js';
   import { auth, db } from '../../../lib/firebase/firebase';
   import { onMount } from 'svelte';
@@ -13,6 +13,7 @@
   const ticketsPerPage = 10;
   let ticket_data = [];
   let startAfterDoc;
+  let propertyName = '';
   let filterStatus = '';
   let filterPriority = '';
 
@@ -104,6 +105,15 @@
     isAdmin = await checkAdminStatus();
     uid = auth.currentUser.uid;
 
+    const userDocRef = doc(db, 'users', uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+
+      if (userDocSnapshot.exists()) {
+        const userData = userDocSnapshot.data();
+        propertyName = '- ' + userData.propertyName;
+        
+      }
+
     const data = await (isAdmin ? getAllTickets : getUserTickets)(null, ticketsPerPage);
     ticket_data = data.tickets
     startAfterDoc = data.startAfterDoc
@@ -114,7 +124,7 @@
 <section>
 <TicketDetails on:delete-ticket={handleDispatch} ticket = {selectedTicket} show={showModal} />
   <div class="title">
-    <h1>Tickets</h1>
+    <h1>Tickets {propertyName}</h1>
     <p>Manage all your Properties Maintenance Tickets</p>
     <Link to="/tickets/add" text='Add Ticket'/>
   </div>
