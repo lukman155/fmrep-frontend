@@ -1,5 +1,5 @@
 <script>
-  import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+  import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword } from "firebase/auth";
   import { goto } from '$app/navigation'
   import { userAuth } from "../store/authStore";
   import { Timestamp, doc, setDoc } from "firebase/firestore";
@@ -13,7 +13,6 @@
   let errorMsg;
   let register = false;
   let authenticating = false;
-  let isAdmin;
   
   const auth = getAuth();
 
@@ -40,13 +39,18 @@
     authenticating = true;
       if (!register) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+        if (userCredential.emailVerified) {
+          errorMsg = 'Email not verified';
+          authenticating = false
+          return;  
+        }
         $userAuth = userCredential.user;
         document.cookie = `isLoggedIn=true; max-age=3600`;
         goto('/tickets');
       toast.push('Logged in', { classes: ['toast-success'] });
 
       } else {
-        if (isAdmin) {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
           await setDoc(doc(db, "admins", user.uid), {
@@ -55,25 +59,15 @@
             admin: true
           });
           $userAuth = user;
+          await sendEmailVerification(user);
           document.cookie = `isLoggedIn=true; max-age=3600`;
-          goto('/dashboard');
-        } else {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-          await setDoc(doc(db, "users", user.uid), {
-            createdAt: Timestamp.now(),
-            property_id: '',
-          });
-          $userAuth = userCredential.user;
-          document.cookie = `isLoggedIn=true; max-age=3600`;
-          goto('/dashboard');
-          toast.push('Registered Account Successfully', { classes: ['toast-success'] });
-
-        }
+          goto('/login');
+          toast.push('Registered Account Successfully, Please verify your email', { classes: ['toast-success'] });
       }
       authenticating = false;
     } catch (error) {
       errorState = true;
+      authenticating = false;
       handleAuthError(error);
     }
   }
@@ -112,6 +106,11 @@
     register = !register;
   }
 
+  async function resendEmail() {
+    await sendEmailVerification(auth.currentUser);
+    toast.push('Verification email sent!'); 
+  }
+
 
 </script>
 
@@ -134,15 +133,23 @@
       <input autocomplete="current-password" bind:value={password} type="password" placeholder="Password" />
     </label>
 
+  {#if errorMsg === 'Email not verified'}
+
+    <div>
+      <p>Please verify your email address</p>
+      <button on:click={resendEmail}>
+        Resend Verification Email
+      </button>
+    </div>
+
+  {/if}
+
     {#if register}
 
       <label>
         <p class={confirmPass?'above':'center'}>Confirm Password</p>
         <input autocomplete="current-password" bind:value={confirmPass} type="password" placeholder="Confirm Password" />
       </label>
-
-      <label for="adminCheckbox">Create an admin account</label>
-      <input id="adminCheckbox" type="checkbox" name="isAdmin" bind:checked={isAdmin} />
 
 
     {/if}

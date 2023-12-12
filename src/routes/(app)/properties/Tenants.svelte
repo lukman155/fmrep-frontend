@@ -1,6 +1,6 @@
 <script>
   import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-  import { getDocs, query, where, collection, deleteDoc, doc, setDoc, Timestamp } from 'firebase/firestore';
+  import { getDocs, query, where, collection, deleteDoc, doc, setDoc, Timestamp, addDoc } from 'firebase/firestore';
 
   import { db, auth } from '../../../lib/firebase/firebase';
   
@@ -42,6 +42,7 @@
       // Create user with email and password
       let adminUser = auth.currentUser;
       let adminId = auth.currentUser.uid
+      toast.push(`${fullName} created successfully, Refresh page`, { classes: ['toast-success'] });
       const userCredential = await createUserWithEmailAndPassword(auth, email, defaultPassword);
 
       // Get the user's UID
@@ -60,7 +61,19 @@
       });
 
       auth.updateCurrentUser(adminUser);
-      toast.push(`${fullName} created successfully`, { classes: ['toast-success'] });
+      const mailCollection = collection(db, 'mail');
+      await addDoc(mailCollection, {
+        to: email,
+        message: {
+          subject: 'FMRepEx - Login Details',
+          html: `Hello ${fullName}, this  is to inform you that your account has been successfully created,
+                  your login details are as follows:
+                  Email - ${email}
+                  Password - ${defaultPassword}
+                  Do not share this details with anyone.
+                  Have a great day.`,
+        },
+      });
       loadTenants();
     } catch (error) {
       console.error('Error creating user:', error.message);

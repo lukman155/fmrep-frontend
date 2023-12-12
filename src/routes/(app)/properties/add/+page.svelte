@@ -2,8 +2,6 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { goto } from '$app/navigation';
 	import { auth } from './../../../../lib/firebase/firebase.js';
-	import AddAssetForm from './AddAssetForm.svelte';
-	import { addAsset } from './AddAssetForm.svelte';
 	import InputField from './../../../../lib/components/InputField.svelte';
   import { addDoc, collection, Timestamp } from "firebase/firestore";
   import { db, storage } from "../../../../lib/firebase/firebase";
@@ -93,9 +91,6 @@
   <!-- Input field for selecting property image -->
   <label for="propertyImageInput">Select Property Image:</label>
   <input type="file" id="propertyImageInput" accept="image/*" on:change={handlePropertyImageChange} class="file-input" />
-
-
-  <AddAssetForm ></AddAssetForm>
 
   <button class="submit-btn" on:click={addPropertyAndAssets} on:submit={addPropertyAndAssets}>
     {#if error}

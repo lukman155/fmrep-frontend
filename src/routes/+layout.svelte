@@ -22,7 +22,6 @@
       } else {
         isLoggedIn.update(() => false)
         console.log('logged out')
-        toast.push('Logged out', { classes: ['toast-warning'] });
         document.cookie = `isLoggedIn=false; max-age=3600`;
         userAuth.set(null);
       }

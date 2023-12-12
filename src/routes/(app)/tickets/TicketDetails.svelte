@@ -2,8 +2,8 @@
 <script>
 	import { statusOptions } from './add/options.js';
 	import { toast } from '@zerodevx/svelte-toast';
-  import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-  import { db } from '../../../lib/firebase/firebase';
+  import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+  import { auth, db } from '../../../lib/firebase/firebase';
   import { createEventDispatcher, onMount, tick } from 'svelte';
 
 
@@ -12,40 +12,73 @@
   export let show;
 
   let selectedStatus;
+  let isAdmin = false;
 
+  const checkAdminStatus = async () => {
+    try {
+      const adminsCollectionRef = collection(db, 'admins');
+      const adminsSnapshot = await getDocs(adminsCollectionRef);
 
-// Update status
-async function updateStatus() {
-  const ticketRef = doc(db, "tickets", ticket.id);
-  const updatedData = {
-    status: selectedStatus // updated status
+      // Check if the current user's UID exists in the admins collection
+      isAdmin = adminsSnapshot.docs.some((doc) => doc.id === auth.currentUser.uid);
+    } catch (error) {
+      console.error('Error checking admin status:', error.message);
+    }
   };
-  await updateDoc(ticketRef, updatedData);
-  // Show success toast
-
-}
+onMount(() => {
+  checkAdminStatus()
+})
 
 async function updateStatusAndRemarks() {
     const ticketRef = doc(db, "tickets", ticket.id);
     const updatedData = {
-      status: ticket.data.status,
-      adminRemarks: ticket.data.adminRemarks,
-    };
-    await updateDoc(ticketRef, updatedData);
-    // Show success toast
-    toast.push(`Status and remarks updated successfully!`);
+    status: ticket.data.status
+  };
+
+  if(ticket.data.adminRemarks) {
+    updatedData.adminRemarks = ticket.data.adminRemarks;  
   }
 
+  await updateDoc(ticketRef, updatedData);
+
   
+  // Get ticket owner email
+  const ownerEmail = ticket.data.tenant_email; 
+  const remarks = updatedData.adminRemarks;
+  const updatedStatus = updatedData.status;
+  
+  // Send email
+  console.log(isAdmin, 'sending msg')
+  if (isAdmin){
+    sendStatusUpdateEmail(ownerEmail, updatedStatus, remarks);
+  }
+    toast.push(`Ticket updated!`);
+  }
 
-// Call on status select change  
-function handleStatusChange() {
-  selectedStatus = this.value;
-  updateStatus();
-  toast.push(`Status updated to ${selectedStatus}!`);
 
-}
+  async function sendStatusUpdateEmail(email, status, remarks) {
 
+    let messageHtml = `
+      Your ticket status has been updated to ${status} by an admin.
+    `;
+
+    // Check if remarks provided
+    if(remarks) {
+      messageHtml += `
+        Remarks: ${remarks}
+      `;
+    }
+
+    const mailRef = collection(db, "mail");
+
+    await addDoc(mailRef , {
+      to: email,
+      message: {
+        subject: `Ticket - '${ticket.data.issue}' updated`,
+        html: messageHtml
+      }
+    });
+  }
 
   function close() {
     show = false;
@@ -78,8 +111,6 @@ function handleStatusChange() {
           <h3>Description:</h3>
           <p>{ticket.data.description || 'No Description'}</p>
 
-
-
         <div class="tags">
 
           <h3>Category:</h3>
@@ -103,13 +134,15 @@ function handleStatusChange() {
           </select>
         </label>
         <!-- Add a textarea for administrator remarks -->
+        
+        {#if isAdmin}
         <label for="adminRemarks">
           <p>Administrator Remarks:</p>
           <textarea id="adminRemarks" bind:value={ticket.data.adminRemarks}></textarea>
         </label>
         <!-- Add a submit button for updating both status and remarks -->
-        <button on:click={updateStatusAndRemarks}>Submit</button>
-      
+      {/if}
+      <button on:click={updateStatusAndRemarks}>Submit</button>
         <div class="remarks-section">
           <h3>Administrator Remarks:</h3>
           <p>{ticket.data.adminRemarks || 'No remarks available'}</p>

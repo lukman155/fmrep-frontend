@@ -1,4 +1,5 @@
 <script>
+	import { toast } from '@zerodevx/svelte-toast';
   import { checkAdminStatus } from './../lib/helper.js';
 
   import { page } from '$app/stores';
@@ -11,6 +12,8 @@
 
   let email = 'loading';
   let isAdmin = false;
+
+  
 
   const unsubscribeAuth = auth.onAuthStateChanged((user) => {
     if (user) {
@@ -33,9 +36,11 @@
   const onAuthStateChanged = (user) => {
     if (user) {
       email = user.email;
+      email = email.length > MAX_EMAIL_LENGTH
+    ? `${email.slice(0, MAX_EMAIL_LENGTH)}...`
+    : email;
       checkAdmin();
     } else {
-      email = 'loading';
       isAdmin = false;
     }
   };
@@ -51,11 +56,17 @@
         document.cookie = `isLoggedIn=false; max-age=3600`;
 
         goto('/login');
+        toast.push('Logged out', { classes: ['toast-warning'] });
+
       })
       .catch((error) => {
         console.error(error);
       });
   };
+
+  const MAX_EMAIL_LENGTH = 15; // Set your desired maximum email length
+
+  
 
   let menuItems = [
     // { text: 'Dashboard', link: 'dashboard', icon: 'fa-dashboard' },
@@ -205,7 +216,6 @@ button {
     border-radius: 10px;
 
   }
-
   a:hover {
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
