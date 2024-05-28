@@ -28,11 +28,11 @@
       uploading = true;
 
       // Fetch user data based on UID
-      const userDocRef = doc(db, 'users', auth.currentUser.uid);
-      const userDocSnapshot = await getDoc(userDocRef);
+      // const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      // const userDocSnapshot = await getDoc(userDocRef);
 
-      if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
+      // if (userDocSnapshot.exists()) {
+        // const userData = userDocSnapshot.data();
 
         // Include user data in the ticket document
         const docData = {
@@ -40,8 +40,8 @@
           createdAt: Timestamp.now(),
           tenant_uid: auth.currentUser.uid,
           tenant_email: auth.currentUser.email,
-          propertyId: userData.propertyId,
-          propertyName: userData.propertyName,     
+          // propertyId: userData.propertyId,
+          // propertyName: userData.propertyName,     
         };
 
         // Reference to the 'tickets' collection with automatic document ID generation
@@ -53,9 +53,9 @@
         console.log('Document written with ID:', newTicketRef.id);
         uploading = false;
         history.back();
-      } else {
-        console.error('User document not found');
-      }
+      // } else {
+      //   console.error('User document not found');
+      // }
     } catch (error) {
       console.error('Error adding document:', error.message);
     }
