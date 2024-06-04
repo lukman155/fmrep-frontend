@@ -52,7 +52,7 @@
   const handleLogOut = () => {
     signOut(auth)
       .then(() => {
-        localStorage.removeItem('uid');
+
         document.cookie = `isLoggedIn=false; max-age=3600`;
 
         goto('/login');

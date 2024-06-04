@@ -9,7 +9,7 @@
 
   let name = "";
   let address = "";
-  let description = "5 units of 3-bedroom bungalow with BQ and some blah blah blah";
+  let description = "5 units of 3-bedroom bungalow with a boys quarter and ample parking space ";
   let propertyImageFile = null;
   let loading = false;
   let error = false;
@@ -48,12 +48,14 @@
 
       // Add property data to Firestore
       const propertyData = {
+        manager_id: auth.currentUser.uid,
+        manager_email: auth.currentUser.email,
+        manager_name: auth.currentUser.displayName,
         name: name,
         address: address,
         description: description,
         imageUrl: propertyImageUrl,
         createdAt: Timestamp.now(),
-        adminId,
       };
 
       const propertyRef = await addDoc(collection(db, "properties"), propertyData);
@@ -61,7 +63,7 @@
 
       // Add each asset to Firestore
 
-      await addAsset(propertyId)
+      // await addAsset(propertyId)
       loading = false;
       goto('/properties')
 
@@ -77,11 +79,9 @@
 
 </script>
 
-
 <section>
 
 <a href="/properties">Back</a>
-
 
 <form>
   <InputField label={'Name*'} bind:value={name} required />
@@ -120,7 +120,7 @@
     margin-bottom: 5px;
   }
 
-  input, textarea, select {
+  input {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
@@ -129,23 +129,6 @@
 
   .file-input {
     display: block;
-    margin-top: 5px;
-  }
-
-  .asset-container {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 20px;
-  }
-
-  .asset {
-    margin-bottom: 10px;
-  }
-
-
-
-  .asset img {
-    max-width: 100px;
     margin-top: 5px;
   }
 

@@ -9,7 +9,8 @@
 
   const loadTickets = async () => {
     try {
-      const q = query(collection(db, 'tickets'), where('propertyId', '==', propertyId));
+      const q = query(collection(db, 'tickets'),
+      where('propertyId', '==', propertyId));
     
       const querySnapshot = await getDocs(q);
 

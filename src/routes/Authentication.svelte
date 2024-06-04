@@ -48,7 +48,7 @@
         $userAuth = userCredential.user;
         document.cookie = `isLoggedIn=true; max-age=3600`;
         goto('/tickets');
-      toast.push('Logged in', { classes: ['toast-success'] });
+        toast.push('Logged in', { classes: ['toast-success'] });
 
       } else {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);

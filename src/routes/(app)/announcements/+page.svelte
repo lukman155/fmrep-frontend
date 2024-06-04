@@ -12,40 +12,35 @@
     onSnapshot,
     orderBy,
     query,
+    where,
   } from 'firebase/firestore';
   import { auth, db } from '../../../lib/firebase/firebase';
   import InputField from '../../../lib/components/InputField.svelte';
   import TextArea from '../../../lib/components/TextArea.svelte';
+  import { checkAdminStatus, formatDate } from '../../../lib/helper';
 
-  let data = [];
+
+  let allAnnouncements = [];
+  let filteredAnnouncements = [];
   let title = '';
   let content = '';
   let isAdmin = false;
+  let properties = [];
+  let selectedPropertyForm = '';
+  let selectedPropertyFilter = '';
 
-  function formatDate(date) {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
-  }
-
-  const checkAdminStatus = async () => {
-    try {
-      const adminsCollectionRef = collection(db, 'admins');
-      const adminsSnapshot = await getDocs(adminsCollectionRef);
-
-      // Check if the current user's UID exists in the admins collection
-      isAdmin = adminsSnapshot.docs.some((doc) => doc.id === auth.currentUser.uid);
-    } catch (error) {
-      console.error('Error checking admin status:', error.message);
-    }
-  };
 
   const addAnnouncement = async () => {
     if (title && content) {
       await addDoc(collection(db, 'announcements'), {
         title,
         content,
+        manager_email: auth.currentUser.email,
         createdAt: Timestamp.now(),
+        manager_id: auth.currentUser.uid,
+        property_id: selectedPropertyForm,
       });
+
       toast.push('Added Announcement Successfully', { classes: ['toast-success'] });
 
       title = '';
@@ -53,54 +48,105 @@
     }
   };
 
+
   const deleteAnnouncement = async (id) => {
     try {
       const announcementRef = doc(db, 'announcements', id);
       await deleteDoc(announcementRef);
       toast.push('Deleted Announcement Successfully', { classes: ['toast-warning'] });
-
     } catch (error) {
       console.error('Error deleting announcement:', error.message);
       toast.push('Error: Failed to delete announcement', { classes: ['toast-error'] });
-
     }
   };
 
+  const filterAnnouncements = () => {
+    if (selectedPropertyFilter) {
+      filteredAnnouncements = allAnnouncements.filter(announcement => announcement.property_id === selectedPropertyFilter);
+    } else {
+      filteredAnnouncements = allAnnouncements;
+    }
+  };
+
+  const getAnnouncements = async () => {
+    try {
+      const collectionRef = collection(db, 'announcements');
+      const q = query(collectionRef, where('manager_id', '==', auth.currentUser.uid), orderBy('createdAt', 'desc'));
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        allAnnouncements = snapshot.docs.map((doc) => {
+          const announcementData = doc.data();
+          const createdAt = announcementData.createdAt.toDate();
+          return { id: doc.id, ...announcementData, createdAt };
+        });
+        filterAnnouncements();
+      });
+    }
+    catch (error) {
+      console.error('Error loading announcement:', error.message);
+      toast.push('Error: Failed to load announcement', { classes: ['toast-error'] });
+    }
+  }
   let unsubscribe;
 
-  onMount(() => {
-    checkAdminStatus();
-    const collectionRef = collection(db, 'announcements');
-    const q = query(collectionRef, orderBy('createdAt', 'desc'));
-    unsubscribe = onSnapshot(q, (snapshot) => {
-      data = snapshot.docs.map((doc) => {
-        const announcementData = doc.data();
-        const createdAt = announcementData.createdAt.toDate();
-        return { id: doc.id, ...announcementData, createdAt };
-      });
-    });
-  });
+  const fetchProperties = async () => {
+    try {
+      const collectionRef = collection(db, 'properties');
+      const q = query(collectionRef, where('manager_id', '==', auth.currentUser.uid));
+      const querySnapshot = await getDocs(q);
+      properties = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (err) {
+      console.error('Error fetching properties:', err.message);
+    }
+  };
 
+
+  onMount(async() => {
+    isAdmin = await checkAdminStatus();
+    getAnnouncements();
+    fetchProperties();
+    console.log(properties)
+  });
+  
   onDestroy(() => {
     if (unsubscribe) {
       unsubscribe();
     }
   });
+
+  
 </script>
 
 <div>
   <h1>Announcements</h1>
 
   {#if isAdmin}
+  
   <form on:submit={addAnnouncement}>
+    <div>
+      <label for="select">To:</label>
+      <select bind:value="{selectedPropertyForm}">
+        <option value="">All properties</option>
+        {#each properties as property}
+          <option value="{property.id}">{property.name}</option>
+        {/each}
+      </select>
+    </div>
+    
     <InputField bind:value={title} label='Title*' />
     <TextArea bind:value={content} label='Content*'/>
     <button type="submit">Add Announcement</button>
   </form>
   {/if}
 
+  <select bind:value="{selectedPropertyFilter}" on:change={filterAnnouncements}>
+    <option value="">All properties</option>
+    {#each properties as property}
+      <option value="{property.id}">{property.name}</option>
+    {/each}
+  </select>
+
   <ul>
-    {#each data as { id, title, content, createdAt }}
+    {#each filteredAnnouncements as { id, title, content, createdAt }}
     <li>
       <h3>{title}</h3>
       <p>{content}</p>

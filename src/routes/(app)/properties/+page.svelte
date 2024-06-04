@@ -1,19 +1,22 @@
 <script>
 
-  import { collection, getDocs, query, where } from "firebase/firestore";
+  import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
   import { onMount } from "svelte";
-  import { db } from "../../../lib/firebase/firebase";
+  import { auth, db } from "../../../lib/firebase/firebase";
   import Link from "../../../lib/components/Link.svelte";
   import PropertyModal from './PropertyModal.svelte';
+  import { checkAdminStatus } from "../../../lib/helper";
 
 let properties = [];
 let selectedProperty = null;
 let error = null;
 
-const fetchProperties = async () => {
+export const fetchProperties = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, 'properties'));
-    properties = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const collectionRef = collection(db, 'properties');
+    const q = query(collectionRef, where('manager_id', '==', auth.currentUser.uid));
+    const docSnap = await getDocs(q);
+    properties = docSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (err) {
     console.error('Error fetching properties:', err.message);
     error = err.message;
@@ -26,8 +29,10 @@ const loadTenants = async (propertyId) => {
   return snapshot.size; // return number of docs
 }
 
-onMount(() => {
-  fetchProperties();
+onMount(async() => {
+  await checkAdminStatus()
+  await fetchProperties();
+
 });
 </script>
 
